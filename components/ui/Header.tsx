@@ -23,6 +23,7 @@ function Header() {
   const router = useRouter();
   const [isAdminUser, setIsAdminUser] = useState(false);
 
+  // Cek apakah user adalah admin
   useEffect(() => {
     const checkAdmin = async () => {
       const adminStatus = await isAdmin();
@@ -31,6 +32,7 @@ function Header() {
     checkAdmin();
   }, []);
 
+  // Update tampilan header saat scroll
   const scrollHandler = () => {
     window.pageYOffset > 10 ? setTop(false) : setTop(true);
   };
@@ -41,6 +43,7 @@ function Header() {
     return () => window.removeEventListener("scroll", scrollHandler);
   }, [top]);
 
+  // Mengatur state user berdasarkan Firebase Authentication
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -52,6 +55,7 @@ function Header() {
     return () => unsubscribe();
   }, []);
 
+  // Fungsi untuk logout
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
@@ -59,7 +63,7 @@ function Header() {
   };
 
   return (
-    <header className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? 'bg-white backdrop-blur-md shadow-lg' : ''}`}>
+    <header className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
       <div className="flex flex-col w-full z-30">
         <div className="flex flex-row w-full top-0 items-center px-5 py-5 md:px-10 md:py-5 space-x-10 z-[100]">
           <Link href="/">
@@ -75,21 +79,29 @@ function Header() {
             {isAdminUser && (
               <>
                 <Link href="/admin/dashboard" className="hover:underline text-red-500">
-                    Admin Dashboard
+                  Admin Dashboard
                 </Link>
                 <Link href="/admin/reports" className="hover:underline text-red-500">
-                    Laporan Konten
+                  Laporan Konten
                 </Link>
-            </>
+              </>
             )}
             <div className="grow"></div>
             <div className="flex flex-row items-center space-x-3">
               <Link href="/search" className="btn-bluetiful p-4">
                 <LuSearch />
               </Link>
-              <Link href="/login" className="btn-bluetiful">
-                Login
-              </Link>
+
+              {/* Tombol Login/Logout berdasarkan status login */}
+              {user ? (
+                <button onClick={handleLogout} className="btn-bluetiful">
+                  Logout
+                </button>
+              ) : (
+                <Link href="/login" className="btn-bluetiful">
+                  Login
+                </Link>
+              )}
             </div>
           </div>
           <div className="md:hidden text-white">
@@ -99,19 +111,26 @@ function Header() {
           </div>
         </div>
 
+        {/* Menu Dropdown saat di mode mobile */}
         {open ? (
           <div className="flex flex-col w-full items-center space-y-4 pb-5 text-white">
             <hr className="w-full" />
             {links.map((val, key) => (
-              <Link
-                href={val[1]}
-                key={key}
-                className="hover:underline"
-                onClick={(e) => setOpen(!open)}
-              >
+              <Link href={val[1]} key={key} className="hover:underline" onClick={(e) => setOpen(!open)}>
                 {val[0]}
               </Link>
             ))}
+
+            {/* Tombol Login/Logout di Menu Dropdown Mobile */}
+            {user ? (
+              <button onClick={handleLogout} className="btn-bluetiful">
+                Logout
+              </button>
+            ) : (
+              <Link href="/login" className="btn-bluetiful">
+                Login
+              </Link>
+            )}
           </div>
         ) : null}
       </div>
