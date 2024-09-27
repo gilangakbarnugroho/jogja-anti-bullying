@@ -52,7 +52,7 @@ const NewPostForm = () => {
         className="w-full p-2 border rounded-lg"
         placeholder="Tulis sesuatu..."
       />
-      <div className="mt-2">
+      {/* <div className="mt-2">
         <label htmlFor="category" className="block text-sm font-medium text-gray-700">
           Pilih Kategori:
         </label>
@@ -60,7 +60,7 @@ const NewPostForm = () => {
           id="category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+          className="mt-1 block w-full p-2 border border-gray-300 text-white bg-bluetiful rounded-md shadow-sm"
         >
           {categories.map((cat, idx) => (
             <option key={idx} value={cat}>
@@ -68,10 +68,10 @@ const NewPostForm = () => {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
       <button
         type="submit"
-        className="bg-bluetiful text-white p-2 mt-2 rounded-lg hover:bg-blue-700"
+        className="btn-bluetiful mt-2"
       >
         Kirim Postingan
       </button>

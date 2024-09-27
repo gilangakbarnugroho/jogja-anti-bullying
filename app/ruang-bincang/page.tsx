@@ -94,7 +94,7 @@ const RuangBincang = () => {
 
   return (
     <div className="container mx-auto p-4 mt-16">
-      <h1 className="text-3xl font-bold mb-6">Ruang Bincang</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-bluetiful">Ruang Bincang</h1>
 
       {/* Form postingan baru */}
       <NewPostForm />
@@ -107,10 +107,11 @@ const RuangBincang = () => {
         {posts.map((post) => (
           <div key={post.id} className="p-4 border rounded-lg shadow-md">
             <p className="text-sm text-gray-500">{post.user}</p>
-            <p className="text-lg">{post.content}</p>
+            <p className="text-xl text-gray-700 py-2">{post.content}</p>
             <p className="text-xs text-gray-400">
               {new Date(post.timestamp.seconds * 1000).toLocaleString()}
             </p>
+            <p className="flex items-stretch space-x-4">
 
             {/* Upvote/Downvote untuk postingan */}
             <UpvoteDownvote postId={post.id} />
@@ -120,6 +121,8 @@ const RuangBincang = () => {
 
             {/* Tombol Lapor */}
             <ReportButton postId={post.id} contentType="post" />
+
+            </p>
 
             {/* Form komentar untuk postingan */}
             <CommentForm postId={post.id} />
@@ -135,7 +138,7 @@ const RuangBincang = () => {
         {hasMore && !isLoading && (
           <button
             onClick={fetchMorePosts}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="btn-bluetiful mt-2"
           >
             Tampilkan Lebih Banyak
           </button>

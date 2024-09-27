@@ -5,6 +5,7 @@ import { auth, db } from "../../firebase/firebaseConfig";
 import { doc, getDoc, query, collection, where, onSnapshot } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signOut } from "firebase/auth";
 
 interface UserProfile {
   name: string;
@@ -15,6 +16,7 @@ interface UserProfile {
 
 interface Post {
   id: string;
+  title: string;
   content: string;
   user: string;
   timestamp: any;
@@ -23,6 +25,7 @@ interface Post {
 interface Bookmark {
   postId: string;
   timestamp: any;
+  postDetail?: Post;
 }
 
 const ProfilePage = () => {
@@ -45,7 +48,7 @@ const ProfilePage = () => {
     };
 
     const fetchPosts = () => {
-      const userId = auth.currentUser?.email; // Menggunakan email untuk mencari postingan
+      const userId = auth.currentUser?.email;
       if (userId) {
         const q = query(collection(db, "posts"), where("user", "==", userId));
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -59,16 +62,32 @@ const ProfilePage = () => {
       }
     };
 
-    const fetchBookmarks = () => {
+    const fetchBookmarks = async () => {
       const userId = auth.currentUser?.uid;
       if (userId) {
         const q = query(collection(db, `users/${userId}/bookmarks`));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+        const unsubscribe = onSnapshot(q, async (snapshot) => {
           const userBookmarks = snapshot.docs.map((doc) => ({
             postId: doc.data().postId,
             timestamp: doc.data().timestamp,
           })) as Bookmark[];
-          setBookmarks(userBookmarks);
+
+          // Ambil detail setiap post berdasarkan postId
+          const postDetails = await Promise.all(
+            userBookmarks.map(async (bookmark) => {
+              const postRef = doc(db, "posts", bookmark.postId);
+              const postDoc = await getDoc(postRef);
+              if (postDoc.exists()) {
+                return {
+                  ...bookmark,
+                  postDetail: postDoc.data() as Post,
+                };
+              }
+              return bookmark;
+            })
+          );
+
+          setBookmarks(postDetails);
         });
         return unsubscribe;
       }
@@ -76,22 +95,35 @@ const ProfilePage = () => {
 
     fetchProfile();
     const unsubscribePosts = fetchPosts();
-    const unsubscribeBookmarks = fetchBookmarks();
+    let unsubscribeBookmarks: (() => void) | undefined = undefined; 
+
+    const initializeBookmarks = async () => {
+      unsubscribeBookmarks = await fetchBookmarks();
+    };
+
+    initializeBookmarks();
 
     return () => {
-      if (unsubscribePosts) unsubscribePosts();
-      if (unsubscribeBookmarks) unsubscribeBookmarks();
+      if (typeof unsubscribePosts === "function") unsubscribePosts();
+      if (typeof unsubscribeBookmarks === "function") unsubscribeBookmarks();
     };
   }, [router]);
+
+  // Fungsi untuk menangani logout
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/login");
+  };
 
   if (!profile) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Profil Saya</h1>
+    <div className="container mx-auto p-4 mt-16">
+      <h1 className="text-3xl text-center text-bluetiful font-bold mb-6">Profil Saya</h1>
 
+      {/* Informasi Profil */}
       <div className="flex items-center space-x-4 mb-6">
         <img
           src={profile.profilePicture || "/default-profile.png"}
@@ -99,26 +131,38 @@ const ProfilePage = () => {
           className="w-20 h-20 rounded-full"
         />
         <div>
-          <h2 className="text-xl font-semibold">{profile.name}</h2>
+          <h2 className="text-xl text-bluetiful font-semibold">{profile.name}</h2>
           <p className="text-gray-500">{profile.email}</p>
         </div>
       </div>
 
+      {/* Bio Profil */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold">Bio</h3>
-        <p>{profile.bio || "Belum ada bio."}</p>
+        <h3 className="text-lg text-bluetiful font-semibold">Bio</h3>
+        <p className="text-bluetiful">{profile.bio || "Belum ada bio."}</p>
       </div>
 
-      {/* Tautan untuk mengedit profil */}
-      <button
-        onClick={() => router.push("/profile/edit")}
-        className="bg-bluetiful text-white px-4 py-2 rounded-lg hover:bg-blue-700 mb-6"
-      >
-        Edit Profil
-      </button>
+      {/* Tombol Edit Profil dan Logout */}
+      <div className="flex items-center space-x-4 mb-6">
+        {/* Tombol Edit Profil */}
+        <button
+          onClick={() => router.push("/profile/edit")}
+          className="bg-bluetiful shadow-md text-white px-7 py-2 rounded-full hover:bg-white hover:text-bluetiful"
+        >
+          Edit Profil
+        </button>
+
+        {/* Tombol Logout */}
+        <button
+          onClick={handleLogout}
+          className="bg-red-700 shadow-md text-white px-7 py-2 rounded-full hover:bg-red-900"
+        >
+          Logout
+        </button>
+      </div>
 
       {/* Aktivitas pengguna (postingan yang pernah dibuat) */}
-      <h3 className="text-lg font-semibold mb-4">Aktivitas Saya</h3>
+      <h3 className="text-lg text-bluetiful font-semibold mb-4">Aktivitas Saya</h3>
 
       {/* Menampilkan postingan yang dibuat oleh pengguna */}
       {profilePosts.length > 0 ? (
@@ -126,7 +170,7 @@ const ProfilePage = () => {
           {profilePosts.map((post) => (
             <div key={post.id} className="p-4 border rounded-lg shadow-md">
               <p className="text-sm text-gray-500">Diposting oleh: {post.user}</p>
-              <p className="text-lg">{post.content}</p>
+              <p className="text-lg text-gray-700 py-2">{post.content}</p>
               <p className="text-xs text-gray-400">
                 {new Date(post.timestamp.seconds * 1000).toLocaleString()}
               </p>
@@ -138,13 +182,18 @@ const ProfilePage = () => {
       )}
 
       {/* Bookmark pengguna */}
-      <h3 className="text-lg font-semibold mt-8 mb-4">Bookmark Saya</h3>
+      <h3 className="text-lg text-bluetiful font-semibold mt-8 mb-4">Bookmark Saya</h3>
 
       {bookmarks.length > 0 ? (
         <div className="space-y-4">
           {bookmarks.map((bookmark) => (
-            <Link key={bookmark.postId} href={`/ruang-bincang/${bookmark.postId}`} className="p-4 border rounded-lg shadow-md block">
-              <p className="text-sm text-gray-500">Post ID: {bookmark.postId}</p>
+            <Link
+              key={bookmark.postId}
+              href={`/ruang-bincang/`}
+              className="p-4 border rounded-lg shadow-md block"
+            >
+              <p className="text-sm text-gray-500">Diposting oleh: {bookmark.postDetail?.user || "Pengguna Tidak Diketahui"}</p>
+              <p className="text-lg text-gray-700 py-2">{bookmark.postDetail?.content || "Konten Tidak Ditemukan"}</p>
               <p className="text-xs text-gray-400">
                 Disimpan pada: {new Date(bookmark.timestamp.seconds * 1000).toLocaleString()}
               </p>

@@ -45,7 +45,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
       />
       <button
         type="submit"
-        className="bg-bluetiful text-white p-2 mt-2 rounded-lg hover:bg-blue-700"
+        className="btn-bluetiful mt-2"
       >
         Kirim Komentar
       </button>

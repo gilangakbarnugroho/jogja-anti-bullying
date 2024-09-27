@@ -6,8 +6,8 @@ import React, { useState, useEffect } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { LuSearch } from "react-icons/lu";
 import { isAdmin, auth } from "../../firebase/firebaseConfig";
-import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { VscAccount } from "react-icons/vsc"; // Import VscAccount dari react-icons
 
 const links = [
   ["Ruang Bincang", "/ruang-bincang"],
@@ -55,13 +55,6 @@ function Header() {
     return () => unsubscribe();
   }, []);
 
-  // Fungsi untuk logout
-  const handleLogout = async () => {
-    await signOut(auth);
-    setUser(null);
-    router.push("/login");
-  };
-
   return (
     <header className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
       <div className="flex flex-col w-full z-30">
@@ -78,25 +71,24 @@ function Header() {
             ))}
             {isAdminUser && (
               <>
-                <Link href="/admin/dashboard" className="hover:underline text-red-500">
+                <Link href="/admin/dashboard" className="hover:underline text-bluetiful">
                   Admin Dashboard
                 </Link>
-                <Link href="/admin/reports" className="hover:underline text-red-500">
+                <Link href="/admin/reports" className="hover:underline text-bluetiful">
                   Laporan Konten
                 </Link>
               </>
             )}
             <div className="grow"></div>
             <div className="flex flex-row items-center space-x-3">
-              <Link href="/search" className="btn-bluetiful p-4">
-                <LuSearch />
+              <Link href="/search" className="bg-bluetiful rounded-full shadow-md text-white hover:bg-white hover:text-bluetiful p-2">
+                <LuSearch size={20} />
               </Link>
 
-              {/* Tombol Login/Logout berdasarkan status login */}
               {user ? (
-                <button onClick={handleLogout} className="btn-bluetiful">
-                  Logout
-                </button>
+                <Link href="/profile" className="bg-bluetiful rounded-full shadow-md text-white hover:bg-white hover:text-bluetiful p-2">
+                  <VscAccount size={20} />
+                </Link>
               ) : (
                 <Link href="/login" className="btn-bluetiful">
                   Login
@@ -121,13 +113,12 @@ function Header() {
               </Link>
             ))}
 
-            {/* Tombol Login/Logout di Menu Dropdown Mobile */}
             {user ? (
-              <button onClick={handleLogout} className="btn-bluetiful">
-                Logout
-              </button>
+              <Link href="/profile" className="btn-bluetiful" onClick={() => setOpen(false)}>
+                <VscAccount size={24} /> Profil 
+              </Link>
             ) : (
-              <Link href="/login" className="btn-bluetiful">
+              <Link href="/login" className="btn-bluetiful" onClick={() => setOpen(false)}>
                 Login
               </Link>
             )}

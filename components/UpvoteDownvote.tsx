@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebase/firebaseConfig";
 import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
-import { auth } from "../firebase/firebaseConfig"; // Untuk mendapatkan user yang login
+import { auth } from "../firebase/firebaseConfig"; 
+import { BiSolidLike, BiSolidDislike } from "react-icons/bi";
 
 interface UpvoteDownvoteProps {
   postId: string;
@@ -43,7 +44,7 @@ const UpvoteDownvote: React.FC<UpvoteDownvoteProps> = ({ postId, isAnswer = fals
     } else {
       await updateDoc(postRef, {
         upvotes: arrayUnion(userId),
-        downvotes: arrayRemove(userId), // Hapus dari downvote jika ada
+        downvotes: arrayRemove(userId), 
       });
       setUpvotes([...upvotes, userId]);
       setDownvotes(downvotes.filter((id) => id !== userId));
@@ -62,7 +63,7 @@ const UpvoteDownvote: React.FC<UpvoteDownvoteProps> = ({ postId, isAnswer = fals
     } else {
       await updateDoc(postRef, {
         downvotes: arrayUnion(userId),
-        upvotes: arrayRemove(userId), // Hapus dari upvote jika ada
+        upvotes: arrayRemove(userId), 
       });
       setDownvotes([...downvotes, userId]);
       setUpvotes(upvotes.filter((id) => id !== userId));
@@ -71,11 +72,27 @@ const UpvoteDownvote: React.FC<UpvoteDownvoteProps> = ({ postId, isAnswer = fals
 
   return (
     <div className="flex items-center space-x-2">
-      <button onClick={handleUpvote} className={`p-2 ${upvotes.includes(userId || "") ? "text-blue-500" : "text-gray-400"}`}>
-        Upvote ({upvotes.length})
+
+      <button
+        onClick={handleUpvote}
+        className={`p-2 rounded-full flex items-center space-x-1 ${
+          upvotes.includes(userId || "") ? "text-blue-500" : "text-gray-400"
+        } hover:text-bluetiful`}
+        aria-label="Like"
+      >
+        <BiSolidLike size={24} /> 
+        <span>{upvotes.length}</span>
       </button>
-      <button onClick={handleDownvote} className={`p-2 ${downvotes.includes(userId || "") ? "text-red-500" : "text-gray-400"}`}>
-        Downvote ({downvotes.length})
+
+      <button
+        onClick={handleDownvote}
+        className={`p-2 rounded-full flex items-center space-x-1 ${
+          downvotes.includes(userId || "") ? "text-red-500" : "text-gray-400"
+        } hover:text-bluetiful`}
+        aria-label="Dislike"
+      >
+        <BiSolidDislike size={24} /> 
+        <span>{downvotes.length}</span>
       </button>
     </div>
   );

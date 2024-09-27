@@ -41,7 +41,7 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
         comments.map((comment) => (
           <div key={comment.id} className="p-2 border rounded-lg shadow-sm">
             <p className="text-sm text-gray-500">{comment.user}</p>
-            <p>{comment.content}</p>
+            <p className="py-2 text-gray-700">{comment.content}</p>
             <p className="text-xs text-gray-400">
               {new Date(comment.timestamp.seconds * 1000).toLocaleString()}
             </p>
