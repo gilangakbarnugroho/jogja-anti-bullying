@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -9,10 +11,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #ffffff;
     --foreground: #ededed;
   }
 }
+
 
 body {
   color: var(--foreground);
@@ -23,5 +26,19 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer components {
+  .btn-bluetiful {
+    @apply px-7 py-3 shadow-lg shadow-bluetiful-50 border-bluetiful rounded-full bg-bluetiful text-white hover:bg-white hover:text-bluetiful-500 font-semibold;
+  }
+
+  .btn-bluetiful-program {
+    @apply px-7 py-3 shadow-lg shadow-bluetiful-50 border-bluetiful rounded-tl-lg rounded-tr-[4rem] rounded-bl-[4rem] rounded-br-lg bg-bluetiful text-white hover:bg-white hover:text-bluetiful-500 font-semibold;
+  }
+
+  .btn-bluetiful-outline {
+    @apply px-7 py-3 shadow-lg rounded-full bg-white text-bluetiful hover:bg-bluetiful hover:text-white font-semibold;
   }
 }
