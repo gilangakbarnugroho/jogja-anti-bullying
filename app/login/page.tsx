@@ -5,7 +5,8 @@ import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 
 import { auth, db } from "../../firebase/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { FcGoogle } from "react-icons/fc"; // Import ikon Google
+import { FcGoogle } from "react-icons/fc";
+import Link from "next/link";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -57,8 +58,9 @@ const LoginPage = () => {
   }, [router]);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Login</h1>
+    <div className="h-screen flex items-center">
+      <div className="container mx-auto p-4">
+      <h1 className="text-3xl text-center font-bold text-gray-700 mb-6">Login</h1>
       <div className="flex flex-col items-center space-y-4">
 
         {/* Form untuk login dengan Email dan Password */}
@@ -98,7 +100,7 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="bg-bluetiful text-white px-4 py-2 rounded-lg hover:bg-cyan-700 w-full"
+            className="bg-bluetiful text-white px-4 py-2 rounded-full hover:bg-cyan-700 w-full"
           >
             Login dengan Email
           </button>
@@ -108,14 +110,27 @@ const LoginPage = () => {
         <div>
           <button
             onClick={handleGoogleLogin}
-            className="flex items-center shadow-md bg-white text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 space-x-2 w-full"
+            className="flex items-center shadow-md bg-white text-gray-700 px-4 py-2 rounded-full hover:bg-gray-200 space-x-2 w-full"
           >
             <FcGoogle size={24} /> 
             <span>Login dengan Google</span>
           </button>
         </div>
+
+         {/* Link untuk Registrasi */}
+         <div>
+          <p className="text-sm text-gray-300 mt-4">
+            Belum punya akun?{" "}
+            <Link href="/register" className="text-blue-600 hover:underline">
+              Daftar di sini.
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
+
+    </div>
+    
   );
 };
 
