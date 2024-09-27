@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { FC, ReactNode } from 'react';
-import "./globals.css";
+import "../styles/globals.css";
 import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
 import { Toaster } from "react-hot-toast";
 
 const plusJakartaSans = localFont({
-  src: "./fonts/PLUSJAKARTASANS-MEDIUM.ttf",
+  src: "./fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf",
   variable: "--font-sans",
   weight: "100 900",
 });
