@@ -1,34 +1,44 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { auth, db } from "../../firebase/firebaseConfig";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
-import ReCAPTCHA from "react-google-recaptcha";
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 const RegisterPage = () => {
+  return (
+    <GoogleReCaptchaProvider reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}>
+      <RegisterForm />
+    </GoogleReCaptchaProvider>
+  );
+};
+
+const RegisterForm = () => {
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false); // Status verifikasi reCAPTCHA
 
-  // Fungsi untuk verifikasi reCAPTCHA
-  const handleCaptchaVerify = (value: string | null) => {
-    setIsVerified(value !== null);
-    setError(null); // Reset error jika verifikasi berhasil
-  };
-
   // Fungsi untuk registrasi dengan Google
   const handleGoogleRegister = async () => {
-    if (!isVerified) {
-      setError("Tolong verifikasi bahwa Anda bukan robot.");
+    if (!executeRecaptcha) {
+      setError("ReCAPTCHA belum siap. Silakan coba lagi.");
       return;
     }
 
-    const provider = new GoogleAuthProvider();
     try {
+      // Jalankan reCAPTCHA v3 dan dapatkan token verifikasi
+      const token = await executeRecaptcha("register");
+      if (!token) {
+        setError("Verifikasi reCAPTCHA gagal. Silakan coba lagi.");
+        return;
+      }
+
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
@@ -70,7 +80,7 @@ const RegisterPage = () => {
       <div className="container mx-auto p-4 max-w-sm bg-white shadow-md rounded-lg">
         <h1 className="text-3xl text-center font-bold text-gray-700 mb-6">Register</h1>
         <div className="flex flex-col items-center space-y-4">
-          
+
           {/* Register dengan Google */}
           <button
             onClick={handleGoogleRegister}
@@ -79,14 +89,6 @@ const RegisterPage = () => {
             <FcGoogle size={24} />
             <span>Register dengan Google</span>
           </button>
-
-          {/* reCAPTCHA */}
-          <div className="mt-4">
-            <ReCAPTCHA
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string} // Pastikan site key sudah benar
-              onChange={handleCaptchaVerify}
-            />
-          </div>
 
           {/* Pesan Error */}
           {error && <p className="text-red-500 text-sm italic mt-2">{error}</p>}
