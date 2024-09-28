@@ -23,6 +23,7 @@ interface Post {
 }
 
 interface Bookmark {
+  userProfile: any;
   postId: string;
   timestamp: any;
   postDetail?: Post;
@@ -72,17 +73,30 @@ const ProfilePage = () => {
             timestamp: doc.data().timestamp,
           })) as Bookmark[];
 
-          // Ambil detail setiap post berdasarkan postId
+          // Ambil detail setiap post dan user profile berdasarkan postId
           const postDetails = await Promise.all(
             userBookmarks.map(async (bookmark) => {
               const postRef = doc(db, "posts", bookmark.postId);
               const postDoc = await getDoc(postRef);
+
+              let userProfile: UserProfile | undefined;
+
               if (postDoc.exists()) {
+                const postData = postDoc.data() as Post;
+
+                // Ambil data user profile dari `users` collection berdasarkan `post.user`
+                const userDoc = await getDoc(doc(db, "users", postData.user));
+                if (userDoc.exists()) {
+                  userProfile = userDoc.data() as UserProfile;
+                }
+
                 return {
                   ...bookmark,
-                  postDetail: postDoc.data() as Post,
+                  postDetail: postData,
+                  userProfile: userProfile || { name: "Pengguna Tidak Diketahui", profilePicture: "" },
                 };
               }
+
               return bookmark;
             })
           );
@@ -139,7 +153,7 @@ const ProfilePage = () => {
       {/* Bio Profil */}
       <div className="mb-6">
         <h3 className="text-lg text-bluetiful font-semibold">Bio</h3>
-        <p className="text-bluetiful">{profile.bio || "Belum ada bio."}</p>
+        <p className="text-gray-500">{profile.bio || "Belum ada bio."}</p>
       </div>
 
       {/* Tombol Edit Profil dan Logout */}
@@ -169,7 +183,7 @@ const ProfilePage = () => {
         <div className="space-y-4">
           {profilePosts.map((post) => (
             <div key={post.id} className="p-4 border rounded-lg shadow-md">
-              <p className="text-sm text-gray-500">Diposting oleh: {post.user}</p>
+              <p className="text-sm text-gray-500">{profile.name}</p>
               <p className="text-lg text-gray-700 py-2">{post.content}</p>
               <p className="text-xs text-gray-400">
                 {new Date(post.timestamp.seconds * 1000).toLocaleString()}
@@ -189,10 +203,10 @@ const ProfilePage = () => {
           {bookmarks.map((bookmark) => (
             <Link
               key={bookmark.postId}
-              href={`/ruang-bincang/`}
+              href={`/ruang-bincang/${bookmark.postId}`}
               className="p-4 border rounded-lg shadow-md block"
             >
-              <p className="text-sm text-gray-500">Diposting oleh: {bookmark.postDetail?.user || "Pengguna Tidak Diketahui"}</p>
+              <p className="text-sm text-gray-500">Diposting oleh: {bookmark.userProfile?.name || "Pengguna Tidak Diketahui"}</p>
               <p className="text-lg text-gray-700 py-2">{bookmark.postDetail?.content || "Konten Tidak Ditemukan"}</p>
               <p className="text-xs text-gray-400">
                 Disimpan pada: {new Date(bookmark.timestamp.seconds * 1000).toLocaleString()}

@@ -80,7 +80,7 @@ const UpvoteDownvote: React.FC<UpvoteDownvoteProps> = ({ postId, isAnswer = fals
         } hover:text-bluetiful`}
         aria-label="Like"
       >
-        <BiSolidLike size={24} /> 
+        <BiSolidLike size={16} /> 
         <span>{upvotes.length}</span>
       </button>
 
@@ -91,7 +91,7 @@ const UpvoteDownvote: React.FC<UpvoteDownvoteProps> = ({ postId, isAnswer = fals
         } hover:text-bluetiful`}
         aria-label="Dislike"
       >
-        <BiSolidDislike size={24} /> 
+        <BiSolidDislike size={16} /> 
         <span>{downvotes.length}</span>
       </button>
     </div>

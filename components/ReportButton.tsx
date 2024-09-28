@@ -4,6 +4,8 @@ import { useState } from "react";
 import { db } from "../firebase/firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { auth } from "../firebase/firebaseConfig";
+import { MdOutlineReportProblem, MdReportProblem } from "react-icons/md";
+
 
 interface ReportButtonProps {
   postId: string; 
@@ -41,9 +43,9 @@ const ReportButton: React.FC<ReportButtonProps> = ({ postId, contentType }) => {
     <button
       onClick={handleReport}
       disabled={isReported}
-      className="text-sm text-red-500 hover:text-red-700"
+      className="text-sm text-gray-500 hover:text-red-700"
     >
-      {isReported ? "Dilaporkan" : "Laporkan"}
+      {isReported ? <MdReportProblem size={18}/>  : <MdOutlineReportProblem size={18}/> }
     </button>
   );
 };

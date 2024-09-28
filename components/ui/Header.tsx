@@ -72,10 +72,7 @@ function Header() {
             {isAdminUser && (
               <>
                 <Link href="/admin/dashboard" className="hover:underline text-bluetiful">
-                  Admin Dashboard
-                </Link>
-                <Link href="/admin/reports" className="hover:underline text-bluetiful">
-                  Laporan Konten
+                  Dashboard
                 </Link>
               </>
             )}

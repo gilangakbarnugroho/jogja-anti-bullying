@@ -7,27 +7,31 @@ import NewPostForm from "../../components/NewPostForm";
 import UpvoteDownvote from "../../components/UpvoteDownvote";
 import BookmarkButton from "../../components/BookmarkButton";
 import ReportButton from "../../components/ReportButton";
+import PostCommentList from "@/components/PostCommentList"; // Ganti ke PostCommentList
 import Loader from "../../components/ui/Loader";
-import CommentForm from "../../components/CommentForm"; 
-import CommentList from "../../components/CommentList"; 
+import { FaComment } from "react-icons/fa";
+import Link from "next/link";
+import Image from "next/image";
 
 interface Post {
   id: string;
   content: string;
-  user: string;
-  category: string;
+  user: string; // UID dari pengguna
+  name: string; // Nama pengguna yang ditambahkan di `NewPostForm`
+  profilePicture: string; // Foto profil dari akun Google
+  category?: string;
   timestamp: any;
 }
 
-const postsPerPage = 5; 
+const postsPerPage = 5;
 
 const RuangBincang = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [lastVisible, setLastVisible] = useState<any>(null); 
+  const [lastVisible, setLastVisible] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true); 
+  const [hasMore, setHasMore] = useState(true);
 
-  
+  // Ambil data postingan pertama kali
   const fetchInitialPosts = async () => {
     try {
       setIsLoading(true);
@@ -41,9 +45,8 @@ const RuangBincang = () => {
         })) as Post[];
 
         setPosts(postData);
-        setLastVisible(snapshot.docs[snapshot.docs.length - 1]); 
+        setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
 
-        
         setHasMore(snapshot.docs.length === postsPerPage);
       } else {
         setHasMore(false);
@@ -55,7 +58,7 @@ const RuangBincang = () => {
     }
   };
 
-  
+  // Ambil data postingan tambahan untuk pagination
   const fetchMorePosts = async () => {
     if (!lastVisible || !hasMore) return;
 
@@ -105,46 +108,58 @@ const RuangBincang = () => {
       {/* List feed postingan */}
       <div className="space-y-8">
         {posts.map((post) => (
-          <div key={post.id} className="p-4 border rounded-lg shadow-md">
-            <p className="text-sm text-gray-500">{post.user}</p>
-            <p className="text-xl text-gray-700 py-2">{post.content}</p>
-            <p className="text-xs text-gray-400">
-              {new Date(post.timestamp.seconds * 1000).toLocaleString()}
-            </p>
-            <p className="flex items-stretch space-x-4">
+          <div key={post.id} className="p-4 my-4 border rounded-lg shadow-md hover:shadow-lg transition duration-200">
 
-            {/* Upvote/Downvote untuk postingan */}
-            <UpvoteDownvote postId={post.id} />
+            {/* Profil pengguna di samping username */}
+            <Link href={`/profile/${post.user}`} className="flex items-center space-x-3 hover:opacity-75">
+              {post.profilePicture ? (
+                <Image
+                  src={post.profilePicture}
+                  alt={`${post.name}'s profile picture`}
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-gray-200" />
+              )}
+              <div className="font-semibold text-bluetiful">{post.name || post.user}</div>
+            </Link>
 
-            {/* Bookmark untuk postingan */}
-            <BookmarkButton postId={post.id} />
+            {/* Tautan ke detail post */}
+            <Link href={`/ruang-bincang/${post.id}`} className="block">
+              <p className="text-xl text-gray-700 py-3 md:py-5">{post.content}</p>
+              <p className="text-xs text-gray-400">
+                {new Date(post.timestamp.seconds * 1000).toLocaleString()}
+              </p>
+            </Link>
 
-            {/* Tombol Lapor */}
-            <ReportButton postId={post.id} contentType="post" />
+            {/* Tombol interaksi postingan */}
+            <div className="flex justify-stretch space-x-4 border-t my-2">
+              <Link href={`/ruang-bincang/${post.id}`} className="flex items-center space-x-2 text-gray-400 hover:text-bluetiful">
+                <FaComment size={16} />
+              </Link>
 
-            </p>
+              <UpvoteDownvote postId={post.id} />
+              <BookmarkButton postId={post.id} />
+              <ReportButton postId={post.id} contentType="post" />
+            </div>
 
-            {/* Form komentar untuk postingan */}
-            <CommentForm postId={post.id} />
-
-            {/* List komentar untuk postingan */}
-            <CommentList postId={post.id} />
+            {/* Komentar Terbatas */}
+            <div className="mt-2">
+              <PostCommentList postId={post.id} />
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Tombol Pagination */}
       <div className="mt-8 flex justify-center">
         {hasMore && !isLoading && (
-          <button
-            onClick={fetchMorePosts}
-            className="btn-bluetiful mt-2"
-          >
+          <button onClick={fetchMorePosts} className="btn-bluetiful mt-2">
             Tampilkan Lebih Banyak
           </button>
         )}
 
-        {/* Loader untuk tombol pagination */}
         {isLoading && <Loader />}
       </div>
     </div>

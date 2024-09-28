@@ -53,11 +53,11 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({ postId }) => {
   return (
     <button onClick={handleBookmark} className="flex items-center space-x-1">
       {bookmarked ? (
-        <BsBookmarkFill size={20} className="text-bluetiful hover:text-bluetiful" />
+        <BsBookmarkFill size={16} className="text-bluetiful hover:text-bluetiful" />
       ) : (
-        <BsBookmark size={20} className="text-bluetiful hover:text-bluetiful" />
+        <BsBookmark size={16} className="text-gray-400 hover:text-bluetiful" />
       )}
-      <span>{bookmarked ? "Tersimpan" : " "}</span>
+      <span>{bookmarked ? "" : " "}</span>
     </button>
   );
 };

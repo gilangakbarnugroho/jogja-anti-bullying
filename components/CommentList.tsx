@@ -2,22 +2,32 @@
 
 import { useEffect, useState } from "react";
 import { db } from "../firebase/firebaseConfig";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, doc, getDoc } from "firebase/firestore";
 import ReportButton from "./ReportButton";
+import UpvoteDownvote from "./UpvoteDownvote";
+import BookmarkButton from "./BookmarkButton";
+import Image from "next/image";
+import Link from "next/link";
 
 interface Comment {
   id: string;
   content: string;
-  user: string;
+  user: string; // Menyimpan userId dari Firestore, bukan email
   timestamp: any;
 }
 
+interface UserProfile {
+  name: string;
+  profilePicture: string;
+}
+
 interface CommentListProps {
-  postId: string; 
+  postId: string; // ID postingan untuk komentar
 }
 
 const CommentList: React.FC<CommentListProps> = ({ postId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
+  const [userProfiles, setUserProfiles] = useState<{ [key: string]: UserProfile }>({});
 
   useEffect(() => {
     const q = query(
@@ -29,26 +39,82 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
         id: doc.id,
         ...doc.data(),
       })) as Comment[];
+
       setComments(commentData);
+      fetchUserProfiles(commentData); // Ambil data profil user dari komentar
     });
 
     return () => unsubscribe();
   }, [postId]);
 
+  // Ambil profil pengguna berdasarkan ID dari setiap komentar
+  const fetchUserProfiles = async (comments: Comment[]) => {
+    const userIds = comments.map((comment) => comment.user);
+    const uniqueUserIds = Array.from(new Set(userIds)); // Hapus ID yang duplikat
+
+    const newProfiles: { [key: string]: UserProfile } = {};
+    for (const userId of uniqueUserIds) {
+      if (!userId) continue; // Lewati jika userId tidak valid
+
+      try {
+        const userDocRef = doc(db, "users", userId); // Ambil dari users collection dengan userId
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          newProfiles[userId] = userDoc.data() as UserProfile;
+        }
+      } catch (error) {
+        console.error("Error fetching user profile: ", error);
+      }
+    }
+
+    setUserProfiles((prevProfiles) => ({
+      ...prevProfiles,
+      ...newProfiles,
+    }));
+  };
+
   return (
     <div className="space-y-4 mt-4">
       {comments.length > 0 ? (
         comments.map((comment) => (
-          <div key={comment.id} className="p-2 border rounded-lg shadow-sm">
-            <p className="text-sm text-gray-500">{comment.user}</p>
+          <div key={comment.id} className="p-4 border rounded-lg shadow-sm">
+            <div className="flex items-center space-x-3">
+              {/* Profil Picture dari user */}
+              {userProfiles[comment.user]?.profilePicture ? (
+                <Image
+                  src={userProfiles[comment.user]?.profilePicture}
+                  alt={`${userProfiles[comment.user]?.name}'s profile picture`}
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-gray-200" />
+              )}
+
+              {/* Tampilkan nama user sebagai tautan ke profil */}
+              <Link href={`/profile/${comment.user}`} className="font-semibold text-bluetiful hover:underline">
+                {userProfiles[comment.user]?.name || comment.user}
+              </Link>
+            </div>
+
             <p className="py-2 text-gray-700">{comment.content}</p>
             <p className="text-xs text-gray-400">
-              {new Date(comment.timestamp.seconds * 1000).toLocaleString()}
+              {/* Tambahkan pengecekan agar tidak error saat timestamp tidak ada */}
+              {comment.timestamp && comment.timestamp.seconds ? (
+                new Date(comment.timestamp.seconds * 1000).toLocaleString()
+              ) : (
+                "Waktu tidak tersedia"
+              )}
             </p>
 
             {/* Tombol Lapor untuk Komentar */}
-            <ReportButton postId={comment.id} contentType="comment" />
-
+            <div className="flex items-center space-x-4 mt-2">
+              <UpvoteDownvote postId={comment.id} isAnswer={true} /> {/* Upvote/Downvote untuk Komentar */}
+              <BookmarkButton postId={comment.id} /> {/* Bookmark Komentar */}
+              <ReportButton postId={comment.id} contentType="comment" /> {/* Report Komentar */}
+            </div>
           </div>
         ))
       ) : (
