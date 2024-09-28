@@ -12,11 +12,12 @@ import ReCAPTCHA from "react-google-recaptcha";
 const RegisterPage = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [isVerified, setIsVerified] = useState(false); // Untuk status verifikasi reCAPTCHA
+  const [isVerified, setIsVerified] = useState(false); // Status verifikasi reCAPTCHA
 
   // Fungsi untuk verifikasi reCAPTCHA
   const handleCaptchaVerify = (value: string | null) => {
     setIsVerified(value !== null);
+    setError(null); // Reset error jika verifikasi berhasil
   };
 
   // Fungsi untuk registrasi dengan Google
@@ -65,15 +66,15 @@ const RegisterPage = () => {
   }, [router]);
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <div className="container mx-auto p-4 max-w-md bg-white rounded-lg">
+    <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="container mx-auto p-4 max-w-sm bg-white shadow-md rounded-lg">
         <h1 className="text-3xl text-center font-bold text-gray-700 mb-6">Register</h1>
         <div className="flex flex-col items-center space-y-4">
-
+          
           {/* Register dengan Google */}
           <button
             onClick={handleGoogleRegister}
-            className="flex items-center justify-center shadow-md bg-white text-gray-700 px-4 py-2 rounded-full hover:bg-gray-200 space-x-2 w-full sm:max-w-xs"
+            className="flex items-center justify-center shadow-md bg-white text-gray-700 px-4 py-2 rounded-full hover:bg-gray-200 space-x-2 w-full sm:w-64"
           >
             <FcGoogle size={24} />
             <span>Register dengan Google</span>
@@ -82,13 +83,13 @@ const RegisterPage = () => {
           {/* reCAPTCHA */}
           <div className="mt-4">
             <ReCAPTCHA
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string} // Site Key dari reCAPTCHA
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string} // Pastikan site key sudah benar
               onChange={handleCaptchaVerify}
             />
           </div>
 
           {/* Pesan Error */}
-          {error && <p className="text-red-500 text-xs italic">{error}</p>}
+          {error && <p className="text-red-500 text-sm italic mt-2">{error}</p>}
 
           {/* Link ke Halaman Login */}
           <div>
