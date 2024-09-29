@@ -9,7 +9,7 @@ function Hero() {
       <div className="flex flex-col md:flex-row max-w-6xl mx-auto my-auto justify-center items-center py-24 md:py-10 px-10 rtl">
        {/* Section header */}
        <div className="text-center pb-4 md:pb-16">
-        <h1 className="text-5xl md:text-6xl font-extrabold leading-tighter mb-4"> <span className="text-bluetiful">Kanal Digital Anti Bullying</span></h1>
+        <h1 className="text-5xl md:text-6xl font-bold leading-tighter mb-4"> <span className="text-bluetiful">Kanal Digital Anti Bullying</span></h1>
           <div className="max-w-3xl mx-auto">
             <p className="text-md md:text-xl text-bluetiful tracking-wider mb-6">Gerakan Digital untuk Stop Bullying: Program, Artikel, dan Sumber Daya untuk Membuat Perubahan</p>
               <div className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
