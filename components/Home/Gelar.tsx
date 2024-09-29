@@ -36,8 +36,10 @@ export default function Gelar() {
               {/* Slide 1 */}
               <SwiperSlide>
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <img
+                  <Image
                     src="/test/1.png"
+                    height={720}
+                    width={720}
                     alt="Post 1"
                     className="w-full h-48 object-cover rounded-t-lg"
                   />
@@ -62,8 +64,10 @@ export default function Gelar() {
               {/* Slide 2 */}
               <SwiperSlide>
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <img
+                  <Image
                     src="/test/2.png"
+                    height={720}
+                    width={720}
                     alt="Post 2"
                     className="w-full h-48 object-cover rounded-t-lg"
                   />
@@ -88,8 +92,10 @@ export default function Gelar() {
               {/* Slide 3 */}
               <SwiperSlide>
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <img
+                  <Image
                     src="/test/3.png"
+                    height={720}
+                    width={720}
                     alt="Post 3"
                     className="w-full h-48 object-cover rounded-t-lg"
                   />

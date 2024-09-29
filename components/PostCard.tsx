@@ -9,7 +9,6 @@ interface PostCardProps {
   imageUrl: string;
   createdAt: string;
   likes: number;
-  views: number;
   onDelete: () => void;
   isAdmin: boolean;
 }
@@ -21,7 +20,6 @@ const PostCard: React.FC<PostCardProps> = ({
   imageUrl,
   createdAt,
   likes,
-  views,
   onDelete,
   isAdmin,
 }) => {
@@ -45,10 +43,6 @@ const PostCard: React.FC<PostCardProps> = ({
           <div className="flex items-center space-x-1 text-gray-500">
             <AiOutlineLike size={20} />
             <span>{likes}</span>
-          </div>
-          <div className="flex items-center space-x-1 text-gray-500">
-            <AiOutlineEye size={20} />
-            <span>{views}</span>
           </div>
         </div>
 

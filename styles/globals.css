@@ -42,3 +42,39 @@ body {
     @apply px-7 py-3 shadow-lg rounded-full bg-white text-bluetiful hover:bg-bluetiful hover:text-white font-semibold;
   }
 }
+
+.mainSwiper {
+  width: 100%;
+  height: 300px;
+}
+
+.gallerySwiper {
+  width: 100%;
+  height: 100px;
+}
+
+.gallerySwiper .swiper-slide {
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.gallerySwiper .swiper-slide-thumb-active {
+  opacity: 1;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 16rem;
+  background-color: #3377E2; 
+}
+
+/* Link Hover */
+.sidebar a:hover {
+  background-color: #5CADFF; 
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 16rem;
+}
+

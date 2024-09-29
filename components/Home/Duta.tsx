@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css'; 
 import 'swiper/css/navigation'; 
 import 'swiper/css/pagination';
+import Image from 'next/image';
 
 export default function Duta() {
   return (
@@ -36,8 +37,10 @@ export default function Duta() {
             {/* Slide 1 */}
             <SwiperSlide>
               <div className="bg-white rounded-lg shadow-md overflow-hidden my-4">
-                <img
+                <Image
                   src="/test/1.png"
+                  height={720}
+                  width={720}
                   alt="Duta 1"
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
@@ -51,8 +54,10 @@ export default function Duta() {
             {/* Slide 2 */}
             <SwiperSlide>
               <div className="bg-white rounded-lg shadow-md overflow-hidden my-4">
-                <img
+                <Image
                   src="/test/2.png"
+                  height={720}
+                  width={720}
                   alt="Duta 2"
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
@@ -66,8 +71,10 @@ export default function Duta() {
             {/* Slide 3 */}
             <SwiperSlide>
               <div className="bg-white rounded-lg shadow-md overflow-hidden my-4">
-                <img
+                <Image
                   src="/test/3.png"
+                  height={720}
+                  width={720}
                   alt="Duta 3"
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
@@ -81,8 +88,10 @@ export default function Duta() {
             {/* Slide 4 */}
             <SwiperSlide>
               <div className="bg-white rounded-lg shadow-md overflow-hidden my-4">
-                <img
+                <Image
                   src="/test/1.png"
+                  height={720}
+                  width={720}
                   alt="Duta 4"
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
@@ -118,8 +127,10 @@ export default function Duta() {
                 <p className="text-sm">Setiap orang berhak merasa aman tanpa perundungan.</p>
                 <div className="mt-4 flex items-center">
                   <div className="rounded-full bg-white w-8 h-8 overflow-hidden">
-                    <img
+                    <Image
                       src="/test/1.png"
+                      height={720}
+                      width={720}
                       alt="User 1"
                       className="w-full h-full object-cover"
                     />
@@ -136,8 +147,10 @@ export default function Duta() {
                 <p className="text-sm">Setiap orang berhak merasa aman tanpa perundungan.</p>
                 <div className="mt-4 flex items-center">
                   <div className="rounded-full bg-white w-8 h-8 overflow-hidden">
-                    <img
+                    <Image
                       src="/test/2.png"
+                      height={720}
+                      width={720}
                       alt="User 2"
                       className="w-full h-full object-cover"
                     />
@@ -154,8 +167,10 @@ export default function Duta() {
                 <p className="text-sm">Setiap orang berhak merasa aman tanpa perundungan.</p>
                 <div className="mt-4 flex items-center">
                   <div className="rounded-full bg-white w-8 h-8 overflow-hidden">
-                    <img
+                    <Image
                       src="/test/3.png"
+                      height={720}
+                      width={720}
                       alt="User 3"
                       className="w-full h-full object-cover"
                     />

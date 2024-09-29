@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/firebaseConfig";
+import Loader from "./ui/Loader";
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const [user, loading] = useAuthState(auth);
@@ -16,7 +17,10 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   }, [user, loading, router]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return 
+      <div className="flex items-center justify-center h-screen">
+        <Loader /> 
+      </div>
   }
 
   return <>{user ? children : null}</>;

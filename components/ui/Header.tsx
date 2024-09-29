@@ -71,7 +71,7 @@ function Header() {
             ))}
             {isAdminUser && (
               <>
-                <Link href="/admin/dashboard" className="hover:underline text-bluetiful">
+                <Link href="/dashboard-admin" className="hover:underline text-bluetiful">
                   Dashboard
                 </Link>
               </>
@@ -93,7 +93,7 @@ function Header() {
               )}
             </div>
           </div>
-          <div className="md:hidden text-white">
+          <div className="md:hidden text-bluetiful">
             <button onClick={(e) => setOpen(!open)}>
               <GiHamburgerMenu />
             </button>
@@ -102,7 +102,7 @@ function Header() {
 
         {/* Menu Dropdown saat di mode mobile */}
         {open ? (
-          <div className="flex flex-col w-full items-center space-y-4 pb-5 text-white">
+          <div className="flex flex-col w-full items-center space-y-4 pb-5 bg-white text-bluetiful">
             <hr className="w-full" />
             {links.map((val, key) => (
               <Link href={val[1]} key={key} className="hover:underline" onClick={(e) => setOpen(!open)}>
@@ -110,9 +110,17 @@ function Header() {
               </Link>
             ))}
 
+            {isAdminUser && (
+              <>
+                <Link href="/dashboard-admin" className="hover:underline text-bluetiful">
+                  Dashboard
+                </Link>
+              </>
+            )}    
+
             {user ? (
               <Link href="/profile" className="btn-bluetiful" onClick={() => setOpen(false)}>
-                <VscAccount size={24} /> Profil 
+                <VscAccount size={24} />
               </Link>
             ) : (
               <Link href="/login" className="btn-bluetiful" onClick={() => setOpen(false)}>
