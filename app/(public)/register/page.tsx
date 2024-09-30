@@ -11,7 +11,7 @@ import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recapt
 
 const RegisterPage = () => {
   return (
-    <GoogleReCaptchaProvider reCaptchaKey={process.env.SECRET_RECAPTCHA_SITE_KEY as string}>
+    <GoogleReCaptchaProvider reCaptchaKey={process.env.RECAPTCHA_SITE_KEY as string}>
       <RegisterForm />
     </GoogleReCaptchaProvider>
   );
