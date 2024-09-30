@@ -17,7 +17,6 @@ export const metadata: Metadata = {
     ],
   },
   metadataBase: new URL("https://jogjaantibully.com"),
-  themeColor: "#FFF",
 };
 
 const DashboardLayout: FC<{ children: ReactNode }> = ({ children }) => {
