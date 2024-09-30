@@ -27,7 +27,9 @@ interface Post {
 const DetailPost = () => {
   const router = useRouter();
   const params = useParams();
-  const { id } = params;
+
+  // Validasi dan ekstraksi `id` dari `params`
+  const id = typeof params?.id === 'string' ? params.id : '';
 
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);

@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { doc, getDoc, updateDoc, addDoc, query, limit, collection, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
-import Link from "next/link";
 import Image from "next/image";
 import { AiOutlineLike, AiFillLike, AiOutlineExclamationCircle } from "react-icons/ai";
 import Loader from "../../../../components/ui/Loader";
@@ -21,7 +20,9 @@ interface Post {
 const DetailGelar = () => {
   const router = useRouter();
   const params = useParams();
-  const id = params?.id || "";
+  
+  // Pastikan id yang diambil dari params adalah string, jika tidak, ambil elemen pertama
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id || "";
 
   const [post, setPost] = useState<Post | null>(null);
   const [hasLiked, setHasLiked] = useState(false);
@@ -38,6 +39,7 @@ const DetailGelar = () => {
     const fetchPost = async () => {
       try {
         setIsLoading(true);
+        // Pastikan id adalah string
         const docRef = doc(db, "gelarPosts", id);
         const docSnap = await getDoc(docRef);
 
