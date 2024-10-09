@@ -84,6 +84,9 @@ export default function GelarPelajar() {
         </div>
         <h1 className="text-4xl font-bold mt-4">Gelar Pelajar</h1>
         <p className="text-lg mt-2">Wahana ekspresi potensi berbasis Multiple Intelligence untuk merealisasikan minat, bakat, dan kreativitas pelajar.</p>
+        <div className="w-full mt-8">
+          <Image src="/batik.png" width={720} height={720} alt="batik" className="w-full" />
+        </div>
       </header>
 
       <div className="container mx-auto px-4 py-10">
