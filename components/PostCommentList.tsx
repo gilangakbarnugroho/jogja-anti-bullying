@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase/firebaseConfig";
 import { collection, query, orderBy, limit, onSnapshot, doc, getDoc, getDocs } from "firebase/firestore";
 import ReportButton from "./ReportButton";
-import UpvoteDownvote from "./UpvoteDownvote";
+import UpvoteDownvote from "./Upvote";
 import BookmarkButton from "./BookmarkButton";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,6 +31,7 @@ interface PostCommentListProps {
 const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCount }) => {
   const [comment, setComment] = useState<Comment | null>(null); // Hanya satu komentar yang akan ditampilkan
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [commentCount, setLocalCommentCount] = useState(0); // Untuk menyimpan jumlah komentar lokal
 
   useEffect(() => {
     // Query untuk mengambil satu komentar terbaru
@@ -57,7 +58,9 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
 
       // Hitung jumlah total komentar untuk ditampilkan pada tombol
       const commentCountSnapshot = await getDocs(collection(db, `posts/${postId}/comments`));
-      if (setCommentCount) setCommentCount(commentCountSnapshot.size);
+      const count = commentCountSnapshot.size;
+      setLocalCommentCount(count);
+      if (setCommentCount) setCommentCount(count);
     });
 
     return () => unsubscribe();
@@ -118,13 +121,15 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
           </p>
         </div>
       ) : (
-        <p className="text-sm text-gray-500">Belum ada komentar.</p>
+        <p className="text-sm text-gray-500 text-center">Belum ada komentar.</p>
       )}
 
-      {/* Tambahkan tautan untuk menampilkan lebih banyak komentar */}
-      <Link href={`/ruang-bincang/${postId}`} className="flex items-center text-bluetiful text-sm hover:underline mt-2">
-        <FaCommentDots className="mr-1" /> Tampilkan lebih banyak komentar...
-      </Link>
+      {/* Tampilkan tautan hanya jika ada lebih dari satu komentar */}
+      {commentCount > 0 && (
+        <Link href={`/ruang-bincang/${postId}`} className="flex  items-center text-bluetiful text-sm hover:underline mt-2">
+          <FaCommentDots className="mr-1" /> Tampilkan lebih banyak komentar...
+        </Link>
+      )}
     </div>
   );
 };

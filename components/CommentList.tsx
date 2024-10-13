@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase/firebaseConfig";
 import { collection, query, orderBy, onSnapshot, doc, getDoc } from "firebase/firestore";
 import ReportButton from "./ReportButton";
-import UpvoteDownvote from "./UpvoteDownvote";
+import Upvote from "./Upvote";
+import Downvote from "./Downvote";
 import BookmarkButton from "./BookmarkButton";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +15,7 @@ interface Comment {
   content: string;
   user: string; // Menyimpan userId dari Firestore, bukan email
   isAnonymous: boolean; // Field isAnonymous untuk cek apakah komentar anonim
-  timestamp: any;
+  timestamp: { seconds: number }; // Firebase Timestamp
 }
 
 interface UserProfile {
@@ -31,10 +32,9 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
   const [userProfiles, setUserProfiles] = useState<{ [key: string]: UserProfile }>({});
 
   useEffect(() => {
-    const q = query(
-      collection(db, `posts/${postId}/comments`),
-      orderBy("timestamp", "desc")
-    );
+    // Query untuk mengambil komentar berdasarkan postId dan mengurutkan berdasarkan timestamp
+    const q = query(collection(db, `posts/${postId}/comments`), orderBy("timestamp", "desc"));
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const commentData = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -48,25 +48,32 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
     return () => unsubscribe();
   }, [postId]);
 
+  // Fungsi untuk mengambil profil user yang berkomentar
   const fetchUserProfiles = async (comments: Comment[]) => {
     const userIds = comments.map((comment) => comment.user);
     const uniqueUserIds = Array.from(new Set(userIds)); // Hapus ID yang duplikat
 
-    const newProfiles: { [key: string]: UserProfile } = {};
-    for (const userId of uniqueUserIds) {
-      if (!userId) continue;
+    const profilePromises = uniqueUserIds.map(async (userId) => {
+      if (!userId) return null;
 
       try {
-        const userDocRef = doc(db, "users", userId); // Ambil dari users collection dengan userId
+        const userDocRef = doc(db, "users", userId);
         const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
-          newProfiles[userId] = userDoc.data() as UserProfile;
+          return { userId, profile: userDoc.data() as UserProfile };
         }
       } catch (error) {
         console.error("Error fetching user profile: ", error);
       }
-    }
+      return null;
+    });
+
+    const profiles = await Promise.all(profilePromises);
+    const newProfiles = profiles.reduce<{ [key: string]: UserProfile }>((acc, result) => {
+      if (result) acc[result.userId] = result.profile;
+      return acc;
+    }, {});
 
     setUserProfiles((prevProfiles) => ({
       ...prevProfiles,
@@ -107,8 +114,8 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
 
             <p className="py-2 text-gray-700">{comment.content}</p>
             <p className="text-xs text-gray-400">
-              {comment.timestamp && comment.timestamp.seconds ? (
-                new Date(comment.timestamp.seconds * 1000).toLocaleString()
+              {comment.timestamp?.seconds ? (
+                new Date(comment.timestamp.seconds * 1000).toLocaleString("id-ID")
               ) : (
                 "Waktu tidak tersedia"
               )}
@@ -116,14 +123,15 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
 
             {/* Tombol Lapor untuk Komentar */}
             <div className="flex items-center space-x-4 mt-2">
-              <UpvoteDownvote postId={comment.id} isAnswer={true} /> {/* Upvote/Downvote untuk Komentar */}
-              <BookmarkButton postId={comment.id} /> {/* Bookmark Komentar */}
-              <ReportButton postId={comment.id} contentType="comment" /> {/* Report Komentar */}
+              <Upvote postId={comment.id} /> 
+              <Downvote postId={comment.id} />
+              <BookmarkButton postId={comment.id} /> 
+              <ReportButton postId={comment.id} contentType="comment" />
             </div>
           </div>
         ))
       ) : (
-        <p className="text-sm text-gray-500">Belum ada komentar.</p>
+        <p className="text-center my-4 text-sm text-gray-500">Belum ada komentar.</p>
       )}
     </div>
   );

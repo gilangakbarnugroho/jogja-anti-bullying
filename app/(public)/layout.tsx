@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { FC, ReactNode } from 'react';
 import "../../styles/globals.css";
 import Header from "../../components/ui/Header";
+import Nav from "../../components/ui/Nav";
 import Footer from "../../components/ui/Footer";
 import { Toaster } from "react-hot-toast";
 
@@ -40,6 +41,7 @@ const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
         <Header />
         <Toaster />
         {children}
+        <Nav />
         <Footer />
       </body>
     </html>

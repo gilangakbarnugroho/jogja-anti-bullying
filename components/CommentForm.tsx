@@ -7,21 +7,21 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"; //
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faUserSecret, faImage, faTimes } from "@fortawesome/free-solid-svg-icons"; // Tambahkan faTimes untuk menghapus pratinjau
+import { faUser, faUserSecret, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 interface CommentFormProps {
-  postId: string; // ID post untuk menambahkan komentar
+  postId: string;
 }
 
 const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
   const [content, setContent] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(false); // State untuk memilih anonim
-  const [file, setFile] = useState<File | null>(null); // State untuk file gambar/video
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
-  const [previewURL, setPreviewURL] = useState<string | null>(null); // Pratinjau file
-  const [user, setUser] = useState<any>(null); // Simpan informasi user
+  const [previewURL, setPreviewURL] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null); // Ref untuk file input
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -61,35 +61,32 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
       const isVideo = selectedFile.type.startsWith("video/");
 
       if (isImage && selectedFile.size > 2 * 1024 * 1024) {
-        // Gambar melebihi 2MB
         setFileError("Ukuran maksimal gambar adalah 2MB.");
         setFile(null);
-        setPreviewURL(null); // Hapus pratinjau jika file tidak valid
+        setPreviewURL(null);
       } else if (isVideo && selectedFile.size > 5 * 1024 * 1024) {
-        // Video melebihi 5MB
         setFileError("Ukuran maksimal video adalah 5MB.");
         setFile(null);
-        setPreviewURL(null); // Hapus pratinjau jika file tidak valid
+        setPreviewURL(null);
       } else {
         setFileError(null);
-        setFile(selectedFile); // Set file jika valid
-        setPreviewURL(URL.createObjectURL(selectedFile)); // Tampilkan pratinjau file
+        setFile(selectedFile);
+        setPreviewURL(URL.createObjectURL(selectedFile));
       }
     }
   };
 
   const handleRemoveFile = () => {
     setFile(null);
-    setPreviewURL(null); // Hapus pratinjau file
+    setPreviewURL(null);
   };
 
   const handleIconClick = () => {
-    // Simulasikan klik input file ketika ikon diklik
     fileInputRef.current?.click();
   };
 
   const toggleAnonymous = () => {
-    setIsAnonymous(!isAnonymous); // Toggle status anonim
+    setIsAnonymous(!isAnonymous);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,11 +108,9 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
     try {
       let fileURL = null;
       if (file) {
-        // Unggah file ke Firebase Storage
         const storageRef = ref(storage, `comments/${file.name}_${Date.now()}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
 
-        // Tunggu hingga file selesai diunggah
         await new Promise((resolve, reject) => {
           uploadTask.on(
             "state_changed",
@@ -129,23 +124,21 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
         });
       }
 
-      // Simpan komentar ke Firestore
       await addDoc(collection(db, `posts/${postId}/comments`), {
         content,
-        fileURL, // URL file yang diunggah (gambar/video)
-        fileType: file ? file.type : null, // Jenis file (image/video)
-        user: isAnonymous ? "anon" : user.uid, // Gunakan UID atau anon
-        name: isAnonymous ? "Anonim" : user.name, // Gunakan "Anonim" jika anonim
-        profilePicture: isAnonymous ? "" : user.profilePicture, // Kosongkan jika anonim
-        isAnonymous, // Tambahkan flag anonim
+        fileURL,
+        fileType: file ? file.type : null,
+        user: isAnonymous ? "anon" : user.uid,
+        name: isAnonymous ? "Anonim" : user.name,
+        profilePicture: isAnonymous ? "" : user.profilePicture,
+        isAnonymous,
         timestamp: serverTimestamp(),
       });
 
       setContent("");
-      setFile(null); // Reset file
-      setPreviewURL(null); // Reset pratinjau file
-      setError(null);
-      router.refresh(); // Refresh halaman
+      setFile(null);
+      setPreviewURL(null);
+      router.refresh();
     } catch (err) {
       console.error("Error adding comment: ", err);
       setFileError("Terjadi kesalahan saat menambahkan komentar.");
@@ -183,7 +176,6 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
         placeholder="Tambahkan komentar Anda..."
       ></textarea>
 
-      {/* Input file yang disembunyikan */}
       <input
         type="file"
         accept="image/*,video/*"
@@ -192,15 +184,10 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
         className="hidden"
       />
 
-      {/* Pratinjau Gambar/Video */}
       {previewURL && (
         <div className="relative">
           {file?.type.startsWith("image/") ? (
-            <img
-              src={previewURL}
-              alt="Preview"
-              className="w-32 h-32 object-cover rounded-lg"
-            />
+            <img src={previewURL} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
           ) : (
             <video className="w-32 h-32 rounded-lg" controls>
               <source src={previewURL} />
@@ -216,33 +203,33 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
         </div>
       )}
 
-      {/* Ikon untuk menggantikan tombol input file */}
       <div className="flex items-center space-x-3">
         <div
-          className="flex items-center bg-white shadow-sm rounded-lg p-2 space-x-2 cursor-pointer"
+          className="group flex items-center bg-white shadow-sm rounded-lg p-2 space-x-2 cursor-pointer hover:bg-bluetiful"
           onClick={handleIconClick}
         >
           <FontAwesomeIcon
             icon={faImage}
             size="lg"
-            className="cursor-pointer text-bluetiful hover:text-blue-800"
+            className="text-bluetiful group-hover:text-white transition"
           />
-          <span className="hidden md:flex text-gray-700 text-sm">{file ? file.name : "Pilih file (gambar/video)"}</span>
+          <span className="hidden md:flex text-gray-700 group-hover:text-white text-sm">
+            {file ? file.name : "Pilih file (gambar/video)"}
+          </span>
         </div>
 
         {fileError && <p className="text-red-500">{fileError}</p>}
 
-        {/* Ikon anonim atau tidak anonim */}
         <div
-          className="flex items-center bg-white shadow-sm rounded-lg p-2 space-x-2 cursor-pointer"
+          className="group flex items-center bg-white shadow-sm rounded-lg p-2 space-x-2 cursor-pointer hover:bg-bluetiful"
           onClick={toggleAnonymous}
         >
           <FontAwesomeIcon
-            icon={isAnonymous ? faUserSecret : faUser} 
+            icon={isAnonymous ? faUserSecret : faUser}
             size="lg"
-            className={isAnonymous ? "text-red-700" : "text-bluetiful"} 
+            className={`transition ${isAnonymous ? "text-red-700 group-hover:text-white" : "text-bluetiful group-hover:text-white"}`}
           />
-          <span className={isAnonymous ? "hidden md:flex text-red-700 text-sm" : "hidden md:flex text-gray-700 text-sm"}>
+          <span className={`hidden md:flex text-sm transition ${isAnonymous ? "text-red-700 group-hover:text-white" : "text-gray-700 group-hover:text-white"}`}>
             {isAnonymous ? "Anonim" : "Nama Terlihat"}
           </span>
         </div>

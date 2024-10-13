@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Logo from "./Logo";
 import React, { useState, useEffect } from "react";
-import { GiHamburgerMenu } from "react-icons/gi";
+import { CgOptions } from "react-icons/cg";
 import { LuSearch } from "react-icons/lu";
+import { FaTimes } from "react-icons/fa";
 import { isAdmin, auth } from "../../firebase/firebaseConfig";
 import { useRouter } from "next/navigation";
-import { VscAccount } from "react-icons/vsc"; // Import VscAccount dari react-icons
+import { VscAccount } from "react-icons/vsc";
 
 const links = [
   ["Ruang Bincang", "/ruang-bincang"],
@@ -17,7 +18,7 @@ const links = [
 ];
 
 function Header() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // Open state for off-canvas menu
   const [top, setTop] = useState<boolean>(true);
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
@@ -56,80 +57,100 @@ function Header() {
   }, []);
 
   return (
-    <header className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
-      <div className="flex flex-col w-full z-30">
-        <div className="flex flex-row w-full top-0 items-center px-5 py-5 md:px-10 md:py-5 space-x-10 z-[100]">
-          <Link href="/">
+    <header className={`fixed w-full z-30 bg-opacity-90 transition duration-300 ease-in-out ${!top ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
+      <div className="mx-auto max-w-6xl px-5 md:px-10">
+        <div className="flex items-center justify-between py-5">
+          {/* Logo */}
+          <Link href="/" className="flex items-center">
             <Logo />
           </Link>
-          <div className="grow"></div>
-          <div className="hidden md:flex flex-row md:grow items-center space-x-10 text-bluetiful">
+
+          {/* Navigation Links - Desktop */}
+          <div className="hidden md:flex space-x-8 items-center text-bluetiful">
             {links.map((val, key) => (
               <Link href={val[1]} key={key} className="hover:underline">
                 {val[0]}
               </Link>
             ))}
             {isAdminUser && (
-              <>
-                <Link href="/dashboard-admin" className="hover:underline text-bluetiful">
-                  Dashboard
-                </Link>
-              </>
+              <Link href="/dashboard-admin" className="hover:underline text-bluetiful">
+                Dashboard
+              </Link>
             )}
-            <div className="grow"></div>
-            <div className="flex flex-row items-center space-x-3">
-              <Link href="/search" className="bg-bluetiful rounded-full shadow-md text-white hover:bg-white hover:text-bluetiful p-2">
-                <LuSearch size={20} />
-              </Link>
-
-              {user ? (
-                <Link href="/profile" className="bg-bluetiful rounded-full shadow-md text-white hover:bg-white hover:text-bluetiful p-2">
-                  <VscAccount size={20} />
-                </Link>
-              ) : (
-                <Link href="/login" className="btn-bluetiful">
-                  Login
-                </Link>
-              )}
-            </div>
           </div>
-          <div className="md:hidden text-bluetiful">
-            <button onClick={(e) => setOpen(!open)}>
-              <GiHamburgerMenu />
-            </button>
-          </div>
-        </div>
 
-        {/* Menu Dropdown saat di mode mobile */}
-        {open ? (
-          <div className="flex flex-col w-full items-center space-y-4 pb-5 bg-white text-bluetiful">
-            <hr className="w-full" />
-            {links.map((val, key) => (
-              <Link href={val[1]} key={key} className="hover:underline" onClick={(e) => setOpen(!open)}>
-                {val[0]}
-              </Link>
-            ))}
-
-            {isAdminUser && (
-              <>
-                <Link href="/dashboard-admin" className="hover:underline text-bluetiful">
-                  Dashboard
-                </Link>
-              </>
-            )}    
+          {/* Search & Profile/Account - Desktop */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link href="/search" className="bg-bluetiful rounded-full p-2 text-white hover:bg-white hover:text-bluetiful">
+              <LuSearch size={20} />
+            </Link>
 
             {user ? (
-              <Link href="/profile" className="btn-bluetiful" onClick={() => setOpen(false)}>
-                <VscAccount size={24} />
+              <Link href="/profile" className="bg-bluetiful rounded-full p-2 text-white hover:bg-white hover:text-bluetiful">
+                <VscAccount size={20} />
               </Link>
             ) : (
-              <Link href="/login" className="btn-bluetiful" onClick={() => setOpen(false)}>
+              <Link href="/login" className="btn-bluetiful">
                 Login
               </Link>
             )}
           </div>
-        ) : null}
+
+          {/* Mobile Menu Icon */}
+          <div className="md:hidden text-bluetiful">
+            <button onClick={() => setOpen(true)}>
+              <CgOptions size={32} />
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* Off-Canvas Menu for Mobile */}
+      <div
+        className={`fixed top-0 right-0 h-full w-1/2 bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
+          open ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-5 border-b">
+            {/* Close Button */}
+            <button onClick={() => setOpen(false)} className="text-bluetiful font-semibold">
+              <FaTimes />
+            </button>
+          </div>
+
+          <div className="flex flex-col p-5 text-bluetiful space-y-5">
+            {links.map((val, key) => (
+              <Link href={val[1]} key={key} className="hover:underline" onClick={() => setOpen(false)}>
+                {val[0]}
+              </Link>
+            ))}
+            {isAdminUser && (
+              <Link href="/dashboard-admin" className="hover:underline text-bluetiful">
+                Dashboard
+              </Link>
+            )}
+            <Link href="/search" className="btn-bluetiful flex items-center justify-start space-x-3">
+              <LuSearch size={24} />
+              <span>Search</span>
+            </Link>
+            {user ? (
+              <Link href="/profile" className="btn-bluetiful flex space-x-2" onClick={() => setOpen(false)}>
+                <VscAccount size={24} />
+                <span>Profil</span>
+              </Link>
+            ) : (
+              <Link href="/login" className="btn-bluetiful flex space-x-2" onClick={() => setOpen(false)}>
+                <VscAccount size={24} />
+                <span>Login</span>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Backdrop when menu is open */}
+      {open && <div className="fixed inset-0 bg-black opacity-30 z-40" onClick={() => setOpen(false)}></div>}
     </header>
   );
 }
