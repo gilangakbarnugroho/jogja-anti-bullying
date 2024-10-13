@@ -1,24 +1,18 @@
-"use client";
+import { useState, useEffect } from 'react';
+import { auth, db, functions } from '../firebase/firebaseConfig'; 
+import { httpsCallable } from 'firebase/functions';
+import { doc, getDoc } from 'firebase/firestore';
+import { BiSolidLike, BiSolidDislike } from 'react-icons/bi';
 
-import { useState, useEffect } from "react";
-import { db } from "../firebase/firebaseConfig";
-import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
-import { auth } from "../firebase/firebaseConfig"; 
-import { BiSolidLike, BiSolidDislike } from "react-icons/bi";
-
-interface UpvoteDownvoteProps {
-  postId: string;
-  isAnswer?: boolean;
-}
-
-const UpvoteDownvote: React.FC<UpvoteDownvoteProps> = ({ postId, isAnswer = false }) => {
+const UpvoteDownvote = ({ postId }) => {
   const [upvotes, setUpvotes] = useState<string[]>([]);
   const [downvotes, setDownvotes] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchVotes = async () => {
-      const postRef = doc(db, isAnswer ? `posts/${postId}/answers/${postId}` : `posts/${postId}`);
+      const postRef = doc(db, `posts/${postId}`);
       const postDoc = await getDoc(postRef);
       if (postDoc.exists()) {
         setUpvotes(postDoc.data().upvotes || []);
@@ -30,68 +24,65 @@ const UpvoteDownvote: React.FC<UpvoteDownvoteProps> = ({ postId, isAnswer = fals
       setUserId(auth.currentUser.uid);
     }
     fetchVotes();
-  }, [postId, isAnswer]);
+  }, [postId]);
 
-  const handleUpvote = async () => {
-    if (!userId) return;
-    const postRef = doc(db, isAnswer ? `posts/${postId}/answers/${postId}` : `posts/${postId}`);
-    
-    if (upvotes.includes(userId)) {
-      await updateDoc(postRef, {
-        upvotes: arrayRemove(userId),
-      });
-      setUpvotes(upvotes.filter((id) => id !== userId));
-    } else {
-      await updateDoc(postRef, {
-        upvotes: arrayUnion(userId),
-        downvotes: arrayRemove(userId), 
-      });
-      setUpvotes([...upvotes, userId]);
-      setDownvotes(downvotes.filter((id) => id !== userId));
-    }
-  };
+  const handleVote = async (voteType: 'upvote' | 'downvote') => {
+    if (!userId || loading) return;
 
-  const handleDownvote = async () => {
-    if (!userId) return;
-    const postRef = doc(db, isAnswer ? `posts/${postId}/answers/${postId}` : `posts/${postId}`);
-    
-    if (downvotes.includes(userId)) {
-      await updateDoc(postRef, {
-        downvotes: arrayRemove(userId),
-      });
-      setDownvotes(downvotes.filter((id) => id !== userId));
-    } else {
-      await updateDoc(postRef, {
-        downvotes: arrayUnion(userId),
-        upvotes: arrayRemove(userId), 
-      });
-      setDownvotes([...downvotes, userId]);
-      setUpvotes(upvotes.filter((id) => id !== userId));
+    setLoading(true);
+    const votePost = httpsCallable(functions, 'votePost'); 
+
+    try {
+      await votePost({ postId, voteType });
+      // Update local state based on voteType
+      if (voteType === 'upvote') {
+        if (upvotes.includes(userId)) {
+          setUpvotes(upvotes.filter(id => id !== userId));
+        } else {
+          setUpvotes([...upvotes, userId]);
+          setDownvotes(downvotes.filter(id => id !== userId)); 
+        }
+      } else {
+        if (downvotes.includes(userId)) {
+          setDownvotes(downvotes.filter(id => id !== userId));
+        } else {
+          setDownvotes([...downvotes, userId]);
+          setUpvotes(upvotes.filter(id => id !== userId)); 
+        }
+      }
+    } catch (error) {
+      console.error("Error voting:", error);
+      alert("Gagal melakukan voting.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex items-center space-x-2">
-
+      {/* Upvote Button */}
       <button
-        onClick={handleUpvote}
+        onClick={() => handleVote('upvote')}
         className={`p-2 rounded-full flex items-center space-x-1 ${
           upvotes.includes(userId || "") ? "text-blue-500" : "text-gray-400"
         } hover:text-bluetiful`}
         aria-label="Like"
+        disabled={loading} 
       >
-        <BiSolidLike size={16} /> 
+        <BiSolidLike size={16} />
         <span>{upvotes.length}</span>
       </button>
 
+      {/* Downvote Button */}
       <button
-        onClick={handleDownvote}
+        onClick={() => handleVote('downvote')}
         className={`p-2 rounded-full flex items-center space-x-1 ${
           downvotes.includes(userId || "") ? "text-red-500" : "text-gray-400"
         } hover:text-bluetiful`}
         aria-label="Dislike"
+        disabled={loading} 
       >
-        <BiSolidDislike size={16} /> 
+        <BiSolidDislike size={16} />
         <span>{downvotes.length}</span>
       </button>
     </div>

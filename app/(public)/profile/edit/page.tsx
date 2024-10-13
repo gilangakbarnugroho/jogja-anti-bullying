@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth, db } from "../../../../firebase/firebaseConfig";
+import { auth, db, storage } from "../../../../firebase/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const EditProfilePage = () => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
-  const [profilePicture, setProfilePicture] = useState("");
+  const [profilePicture, setProfilePicture] = useState<File | null>(null); // Menggunakan file untuk gambar
+  const [preview, setPreview] = useState<string | null>(null); // Preview gambar yang diunggah
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -21,7 +24,7 @@ const EditProfilePage = () => {
           const userData = userDoc.data();
           setName(userData.name || "");
           setBio(userData.bio || "");
-          setProfilePicture(userData.profilePicture || "");
+          setPreview(userData.profilePicture || ""); // Menggunakan URL gambar untuk preview awal
         }
       } else {
         router.push("/login");
@@ -31,19 +34,45 @@ const EditProfilePage = () => {
     fetchProfile();
   }, [router]);
 
+  const uploadProfilePicture = async (file: File) => {
+    if (!auth.currentUser) return;
+
+    const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+
+    return downloadURL;
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfilePicture(e.target.files[0]);
+      setPreview(URL.createObjectURL(e.target.files[0]));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     const userId = auth.currentUser?.uid;
     if (userId) {
+      let photoURL = preview;
+
+      // Jika ada gambar baru, upload ke Firebase Storage
+      if (profilePicture) {
+        photoURL = await uploadProfilePicture(profilePicture);
+      }
+
+      // Update profil di Firestore
       await updateDoc(doc(db, "users", userId), {
         name,
         bio,
-        profilePicture,
+        profilePicture: photoURL,
       });
+
       setLoading(false);
-      router.push("/profile"); // Redirect kembali ke halaman profil
+      router.push(`/profile/${userId}`); // Redirect kembali ke halaman profil
     }
   };
 
@@ -80,15 +109,15 @@ const EditProfilePage = () => {
 
         <div>
           <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">
-            URL Foto Profil
+            Foto Profil
           </label>
-          <input
-            type="url"
-            id="profilePicture"
-            value={profilePicture}
-            onChange={(e) => setProfilePicture(e.target.value)}
-            className="w-full p-2 border rounded-lg"
-          />
+          <input type="file" accept="image/*" onChange={handleFileChange} className="w-full p-2" />
+
+          {preview && (
+            <div className="mt-4">
+              <Image src={preview} alt="Preview" width={100} height={100} className="rounded-full" />
+            </div>
+          )}
         </div>
 
         <button

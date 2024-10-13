@@ -4,7 +4,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from "firebase/fi
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage, auth } from "../../../firebase/firebaseConfig";
 import Image from "next/image";
-import PostCard from "../../../components/PostCard"; // Import PostCard
+import PostCard from "../../../components/PostCard"; 
 
 interface Post {
   id: string;

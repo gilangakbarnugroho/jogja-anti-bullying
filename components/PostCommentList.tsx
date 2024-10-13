@@ -13,7 +13,8 @@ import { FaCommentDots } from "react-icons/fa";
 interface Comment {
   id: string;
   content: string;
-  user: string; 
+  user: string;
+  isAnonymous: boolean; // Tambahkan field isAnonymous
   timestamp: any;
 }
 
@@ -46,12 +47,11 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
         ...doc.data(),
       })) as Comment[];
 
-      // Ambil hanya komentar pertama atau null
       const firstComment = comments[0] || null;
       setComment(firstComment);
-      
-      // Jika komentar tersedia, ambil profil user
-      if (firstComment) {
+
+      // Jika komentar tersedia dan bukan anonim, ambil profil user
+      if (firstComment && !firstComment.isAnonymous) {
         fetchUserProfile(firstComment.user);
       }
 
@@ -63,7 +63,7 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
     return () => unsubscribe();
   }, [postId, setCommentCount]);
 
-  // Fungsi untuk mengambil profil pengguna berdasarkan userId
+  // Fungsi untuk mengambil profil pengguna berdasarkan userId jika komentar tidak anonim
   const fetchUserProfile = async (userId: string) => {
     try {
       const userDocRef = doc(db, "users", userId);
@@ -82,8 +82,13 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
       {comment ? (
         <div className="p-4 border rounded-lg shadow-sm">
           <div className="flex items-center space-x-3">
-            {/* Profil Picture dari user */}
-            {userProfile?.profilePicture ? (
+            {/* Jika komentar anonim, tampilkan gambar dan nama default */}
+            {comment.isAnonymous ? (
+              <>
+                <div className="w-7 h-7 rounded-full bg-gray-400" />
+                <div className="font-semibold text-gray-600">Anonim</div>
+              </>
+            ) : userProfile?.profilePicture ? (
               <Image
                 src={userProfile.profilePicture}
                 alt={`${userProfile.name}'s profile picture`}
@@ -95,20 +100,22 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
               <div className="w-7 h-7 rounded-full bg-gray-200" />
             )}
 
-            {/* Tampilkan nama user sebagai tautan ke profil */}
-            <Link href={`/profile/${comment.user}`} className="font-semibold text-bluetiful hover:underline">
-              {userProfile?.name || comment.user}
-            </Link>
+            {/* Tampilkan nama user atau Anonim */}
+            {comment.isAnonymous ? (
+              <div className="font-semibold text-gray-600"></div>
+            ) : (
+              <Link href={`/profile/${comment.user}`} className="font-semibold text-bluetiful hover:underline">
+                {userProfile?.name || comment.user}
+              </Link>
+            )}
           </div>
 
           <p className="py-2 text-gray-700">{comment.content}</p>
           <p className="text-xs text-gray-400">
-            {/* Pengecekan untuk menghindari error jika timestamp tidak valid */}
             {comment.timestamp?.seconds
               ? new Date(comment.timestamp.seconds * 1000).toLocaleString()
               : "Waktu tidak tersedia"}
           </p>
-
         </div>
       ) : (
         <p className="text-sm text-gray-500">Belum ada komentar.</p>

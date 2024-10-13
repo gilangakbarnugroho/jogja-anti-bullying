@@ -22,6 +22,7 @@ interface Post {
   category: string;
   profilePicture?: string;
   name: string;
+  isAnonymous: boolean; // Tambahkan field isAnonymous
 }
 
 const DetailPost = () => {
@@ -29,7 +30,7 @@ const DetailPost = () => {
   const params = useParams();
 
   // Validasi dan ekstraksi `id` dari `params`
-  const id = typeof params?.id === 'string' ? params.id : '';
+  const id = typeof params?.id === "string" ? params.id : "";
 
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -87,23 +88,51 @@ const DetailPost = () => {
       <div className="w-full lg:w-4/4">
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
           {/* Profil pengguna di samping username */}
-          <Link href={`/profile/${post.user}`} className="flex items-center space-x-3 hover:opacity-75">
-            {post.profilePicture ? (
-              <Image
-                src={post.profilePicture}
-                alt={`${post.name}'s profile picture`}
-                width={30}
-                height={30}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-gray-200" />
-            )}
-            <div className="font-semibold text-bluetiful">{post.name || post.user}</div>
-          </Link>
+          {post.isAnonymous ? (
+            <div className="flex items-center space-x-3">
+              {/* Tampilan anonim */}
+              <div className="w-7 h-7 rounded-full bg-gray-400" />
+              <div className="font-semibold text-gray-600">Anonim</div>
+            </div>
+          ) : (
+            <Link href={`/profile/${post.user}`} className="flex items-center space-x-3 hover:opacity-75">
+              {post.profilePicture ? (
+                <Image
+                  src={post.profilePicture}
+                  alt={`${post.name}'s profile picture`}
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-gray-200" />
+              )}
+              <div className="font-semibold text-bluetiful">{post.name || post.user}</div>
+            </Link>
+          )}
 
           <p className="text-xl text-gray-800 my-3">{post.content}</p>
-          <p className="text-sm text-gray-500">Dibuat pada: {new Date(post.timestamp.seconds * 1000).toLocaleString()}</p>
+
+          {/* Tampilkan gambar atau video jika ada */}
+          {post.fileURL && post.fileType?.startsWith("image/") && (
+                <Image
+                    src={post.fileURL}
+                    alt="Post Image"
+                    width={500}
+                    height={300}
+                    className="rounded-lg mb-4"
+                />
+                )}
+                {post.fileURL && post.fileType?.startsWith("video/") && (
+                    <video controls className="w-full max-w-lg mt-4 rounded-lg">
+                    <source src={post.fileURL} type={post.fileType} />
+                    Browser Anda tidak mendukung pemutar video.
+                </video>
+                )}
+
+          <p className="text-sm text-gray-500">
+            Dibuat pada: {new Date(post.timestamp.seconds * 1000).toLocaleString("id-ID")}
+          </p>
 
           <div className="flex items-center space-x-4">
             {/* Upvote / Downvote */}
@@ -123,7 +152,6 @@ const DetailPost = () => {
           <CommentList postId={post.id} />
         </div>
       </div>
-
     </div>
   );
 };

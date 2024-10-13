@@ -13,6 +13,7 @@ interface Comment {
   id: string;
   content: string;
   user: string; // Menyimpan userId dari Firestore, bukan email
+  isAnonymous: boolean; // Field isAnonymous untuk cek apakah komentar anonim
   timestamp: any;
 }
 
@@ -47,14 +48,13 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
     return () => unsubscribe();
   }, [postId]);
 
-  // Ambil profil pengguna berdasarkan ID dari setiap komentar
   const fetchUserProfiles = async (comments: Comment[]) => {
     const userIds = comments.map((comment) => comment.user);
     const uniqueUserIds = Array.from(new Set(userIds)); // Hapus ID yang duplikat
 
     const newProfiles: { [key: string]: UserProfile } = {};
     for (const userId of uniqueUserIds) {
-      if (!userId) continue; // Lewati jika userId tidak valid
+      if (!userId) continue;
 
       try {
         const userDocRef = doc(db, "users", userId); // Ambil dari users collection dengan userId
@@ -81,7 +81,9 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
           <div key={comment.id} className="p-4 border rounded-lg shadow-sm">
             <div className="flex items-center space-x-3">
               {/* Profil Picture dari user */}
-              {userProfiles[comment.user]?.profilePicture ? (
+              {comment.isAnonymous ? (
+                <div className="w-7 h-7 rounded-full bg-gray-400" />
+              ) : userProfiles[comment.user]?.profilePicture ? (
                 <Image
                   src={userProfiles[comment.user]?.profilePicture}
                   alt={`${userProfiles[comment.user]?.name}'s profile picture`}
@@ -93,15 +95,18 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
                 <div className="w-7 h-7 rounded-full bg-gray-200" />
               )}
 
-              {/* Tampilkan nama user sebagai tautan ke profil */}
-              <Link href={`/profile/${comment.user}`} className="font-semibold text-bluetiful hover:underline">
-                {userProfiles[comment.user]?.name || comment.user}
-              </Link>
+              {/* Tampilkan nama user atau Anonim */}
+              {comment.isAnonymous ? (
+                <div className="font-semibold text-gray-600">Anonim</div>
+              ) : (
+                <Link href={`/profile/${comment.user}`} className="font-semibold text-bluetiful hover:underline">
+                  {userProfiles[comment.user]?.name || comment.user}
+                </Link>
+              )}
             </div>
 
             <p className="py-2 text-gray-700">{comment.content}</p>
             <p className="text-xs text-gray-400">
-              {/* Tambahkan pengecekan agar tidak error saat timestamp tidak ada */}
               {comment.timestamp && comment.timestamp.seconds ? (
                 new Date(comment.timestamp.seconds * 1000).toLocaleString()
               ) : (
