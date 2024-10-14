@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { auth, db, functions } from '../firebase/firebaseConfig';
-import { httpsCallable } from 'firebase/functions';
-import { doc, getDoc } from 'firebase/firestore';
-import { BiSolidLike } from 'react-icons/bi';
+import { useState, useEffect } from "react";
+import { auth, db } from "../firebase/firebaseConfig";
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { BiSolidLike } from "react-icons/bi";
 
 interface UpvoteProps {
-  postId: string;  // Explicitly define the type of postId as string
+  postId: string;
 }
 
 const Upvote: React.FC<UpvoteProps> = ({ postId }) => {
@@ -20,13 +19,14 @@ const Upvote: React.FC<UpvoteProps> = ({ postId }) => {
       const postRef = doc(db, `posts/${postId}`);
       const postDoc = await getDoc(postRef);
       if (postDoc.exists()) {
-        setUpvotes(postDoc.data().upvotes || []);
+        setUpvotes(postDoc.data().upvotes || []); // Ambil upvotes sebagai array
       }
     };
 
     if (auth.currentUser) {
       setUserId(auth.currentUser.uid);
     }
+
     fetchVotes();
   }, [postId]);
 
@@ -34,18 +34,25 @@ const Upvote: React.FC<UpvoteProps> = ({ postId }) => {
     if (!userId || loading) return;
 
     setLoading(true);
-    const votePost = httpsCallable(functions, 'votePost');
+    const postRef = doc(db, `posts/${postId}`);
 
     try {
-      await votePost({ postId, voteType: 'upvote' });
       if (upvotes.includes(userId)) {
-        setUpvotes(upvotes.filter(id => id !== userId));
+        // Jika sudah upvote, hapus upvote user dari array
+        await updateDoc(postRef, {
+          upvotes: arrayRemove(userId),
+        });
+        setUpvotes(upvotes.filter((id) => id !== userId));
       } else {
+        // Tambahkan user ke array upvotes dan hapus dari downvotes jika ada
+        await updateDoc(postRef, {
+          upvotes: arrayUnion(userId),
+          downvotes: arrayRemove(userId),
+        });
         setUpvotes([...upvotes, userId]);
       }
     } catch (error) {
-      console.error('Error voting:', error);
-      alert('Gagal melakukan voting.');
+      console.error("Error upvoting:", error);
     } finally {
       setLoading(false);
     }
@@ -54,7 +61,9 @@ const Upvote: React.FC<UpvoteProps> = ({ postId }) => {
   return (
     <button
       onClick={handleUpvote}
-      className={`p-2 rounded-full flex items-center space-x-1 ${upvotes.includes(userId || '') ? 'text-blue-500' : 'text-gray-400'} hover:text-bluetiful`}
+      className={`p-2 rounded-full flex items-center space-x-1 ${
+        upvotes.includes(userId || "") ? "text-blue-500" : "text-gray-400"
+      } hover:text-bluetiful`}
       aria-label="Like"
       disabled={loading}
     >

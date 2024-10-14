@@ -1,20 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "../firebase/firebaseConfig";
-import { collection, query, orderBy, limit, onSnapshot, doc, getDoc, getDocs } from "firebase/firestore";
+import { db, auth } from "../firebase/firebaseConfig";
+import { collection, query, orderBy, limit, onSnapshot, doc, getDoc, deleteDoc, getDocs } from "firebase/firestore";
 import ReportButton from "./ReportButton";
-import UpvoteDownvote from "./Upvote";
+import Upvote from "./Upvote";
+import Downvote from "./Downvote";
 import BookmarkButton from "./BookmarkButton";
 import Image from "next/image";
 import Link from "next/link";
 import { FaCommentDots } from "react-icons/fa";
+import { SlOptions } from "react-icons/sl";
 
 interface Comment {
   id: string;
   content: string;
   user: string;
-  isAnonymous: boolean; // Tambahkan field isAnonymous
+  isAnonymous: boolean;
+  fileURL?: string;
+  fileType?: string;
   timestamp: any;
 }
 
@@ -24,24 +28,23 @@ interface UserProfile {
 }
 
 interface PostCommentListProps {
-  postId: string; // ID postingan untuk komentar
-  setCommentCount?: (count: number) => void; // Optional: Fungsi untuk mengirim jumlah komentar ke parent
+  postId: string;
+  setCommentCount?: (count: number) => void;
 }
 
 const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCount }) => {
-  const [comment, setComment] = useState<Comment | null>(null); // Hanya satu komentar yang akan ditampilkan
+  const [comment, setComment] = useState<Comment | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [commentCount, setLocalCommentCount] = useState(0); // Untuk menyimpan jumlah komentar lokal
+  const [commentCount, setLocalCommentCount] = useState(0);
+  const [showOptions, setShowOptions] = useState(false); // To toggle slOptions
 
   useEffect(() => {
-    // Query untuk mengambil satu komentar terbaru
     const q = query(
       collection(db, `posts/${postId}/comments`),
       orderBy("timestamp", "desc"),
-      limit(1) // Batasi hanya menampilkan satu komentar
+      limit(1)
     );
 
-    // Snapshot untuk mengambil data secara real-time
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const comments = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -51,12 +54,10 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
       const firstComment = comments[0] || null;
       setComment(firstComment);
 
-      // Jika komentar tersedia dan bukan anonim, ambil profil user
       if (firstComment && !firstComment.isAnonymous) {
         fetchUserProfile(firstComment.user);
       }
 
-      // Hitung jumlah total komentar untuk ditampilkan pada tombol
       const commentCountSnapshot = await getDocs(collection(db, `posts/${postId}/comments`));
       const count = commentCountSnapshot.size;
       setLocalCommentCount(count);
@@ -66,7 +67,6 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
     return () => unsubscribe();
   }, [postId, setCommentCount]);
 
-  // Fungsi untuk mengambil profil pengguna berdasarkan userId jika komentar tidak anonim
   const fetchUserProfile = async (userId: string) => {
     try {
       const userDocRef = doc(db, "users", userId);
@@ -80,45 +80,107 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
     }
   };
 
+  // Fungsi untuk menghapus komentar
+  const handleDeleteComment = async (commentId: string) => {
+    const confirmed = window.confirm("Apakah Anda yakin ingin menghapus komentar ini?");
+    if (!confirmed) return;
+
+    try {
+      await deleteDoc(doc(db, `posts/${postId}/comments`, commentId));
+      alert("Komentar berhasil dihapus.");
+      setComment(null); // Reset komentar setelah dihapus
+    } catch (error) {
+      console.error("Error deleting comment: ", error);
+    }
+  };
+
   return (
     <div className="space-y-4 mt-4">
       {comment ? (
-        <div className="p-4 border rounded-lg shadow-sm">
-          <div className="flex items-center space-x-3">
-            {/* Jika komentar anonim, tampilkan gambar dan nama default */}
-            {comment.isAnonymous ? (
-              <>
-                <div className="w-7 h-7 rounded-full bg-gray-400" />
-                <div className="font-semibold text-gray-600">Anonim</div>
-              </>
-            ) : userProfile?.profilePicture ? (
-              <Image
-                src={userProfile.profilePicture}
-                alt={`${userProfile.name}'s profile picture`}
-                width={30}
-                height={30}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-gray-200" />
-            )}
+        <div className="p-4 border rounded-lg shadow-sm relative">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              {/* Jika komentar anonim, tampilkan gambar dan nama default */}
+              {comment.isAnonymous ? (
+                <>
+                  <div className="w-7 h-7 rounded-full bg-gray-400" />
+                  <div className="font-semibold text-gray-600">Anonim</div>
+                </>
+              ) : userProfile?.profilePicture ? (
+                <Image
+                  src={userProfile.profilePicture}
+                  alt={`${userProfile.name}'s profile picture`}
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-gray-200" />
+              )}
 
-            {/* Tampilkan nama user atau Anonim */}
-            {comment.isAnonymous ? (
-              <div className="font-semibold text-gray-600"></div>
-            ) : (
-              <Link href={`/profile/${comment.user}`} className="font-semibold text-bluetiful hover:underline">
-                {userProfile?.name || comment.user}
-              </Link>
-            )}
+              {/* Tampilkan nama user atau Anonim */}
+              {comment.isAnonymous ? (
+                <div className="font-semibold text-gray-600"></div>
+              ) : (
+                <Link href={`/profile/${comment.user}`} className="font-semibold text-bluetiful hover:underline">
+                  {userProfile?.name || comment.user}
+                </Link>
+              )}
+            </div>
+
+            {/* slOptions */}
+            <div className="relative">
+              <SlOptions
+                className="cursor-pointer text-gray-300"
+                onClick={() => setShowOptions(!showOptions)}
+              />
+              {showOptions && (
+                <div className="absolute right-0 top-6 w-44 space-y-2 bg-white border rounded-lg shadow-lg p-2">
+                  {auth.currentUser?.uid === comment.user && (
+                    <button
+                      onClick={() => handleDeleteComment(comment.id)}
+                      className="text-red-500 hover:text-red-700 border-b p-2"
+                    >
+                      Hapus Komentar
+                    </button>
+                  )}
+                  <ReportButton postId={comment.id} contentType="comment" />
+                </div>
+              )}
+            </div>
           </div>
 
           <p className="py-2 text-gray-700">{comment.content}</p>
+
+          {/* Render fileURL jika ada */}
+          {comment.fileURL && comment.fileType?.startsWith("image/") && (
+            <Image
+              src={comment.fileURL}
+              alt="Comment Image"
+              width={500}
+              height={300}
+              className="rounded-lg mb-4 mx-auto block"
+              style={{ maxWidth: "100%", height: "auto" }}
+            />
+          )}
+          {comment.fileURL && comment.fileType?.startsWith("video/") && (
+            <video controls className="w-full max-w-lg mt-4 rounded-lg mx-auto block">
+              <source src={comment.fileURL} type={comment.fileType} />
+            </video>
+          )}
+
           <p className="text-xs text-gray-400">
             {comment.timestamp?.seconds
               ? new Date(comment.timestamp.seconds * 1000).toLocaleString()
               : "Waktu tidak tersedia"}
           </p>
+
+          {/* Upvote, Downvote, and Bookmark for the comment */}
+          <div className="flex space-x-3 items-center mt-2">
+            <Upvote postId={comment.id} />
+            <Downvote postId={comment.id} />
+            <BookmarkButton postId={comment.id} />
+          </div>
         </div>
       ) : (
         <p className="text-sm text-gray-500 text-center">Belum ada komentar.</p>
@@ -126,7 +188,7 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
 
       {/* Tampilkan tautan hanya jika ada lebih dari satu komentar */}
       {commentCount > 0 && (
-        <Link href={`/ruang-bincang/${postId}`} className="flex  items-center text-bluetiful text-sm hover:underline mt-2">
+        <Link href={`/ruang-bincang/${postId}`} className="flex items-center text-bluetiful text-sm hover:underline mt-2">
           <FaCommentDots className="mr-1" /> Tampilkan lebih banyak komentar...
         </Link>
       )}

@@ -205,6 +205,8 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
                   </div>
                 </div>
 
+                <Link href={`/ruang-bincang/${post.id}`}>
+
                 <p className="text-lg text-gray-700 pb-3">{post.content}</p>
 
                 {post.fileURL && post.fileType?.startsWith("image/") && (
@@ -222,6 +224,8 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
                     <source src={post.fileURL} type={post.fileType} />
                   </video>
                 )}
+
+                </Link>
 
                 <div className="flex justify-between items-center border-t my-2 pt-3">
                   <Link href={`/ruang-bincang/${post.id}`} className="flex-1 flex justify-center items-center text-gray-400 hover:text-bluetiful">

@@ -3,8 +3,9 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../../../../firebase/firebaseConfig"; 
-import PostCard from "../../../../components/PostCard"; 
+import { db, storage, auth } from "../../../../firebase/firebaseConfig";
+import PostCard from "../../../../components/PostCard"; // Tambahkan PostCard
+import Loader from "../../../../components/ui/Loader";
 
 interface Post {
   id: string;
@@ -23,9 +24,9 @@ export default function ManageGelar() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false); // State untuk status admin
+  const [isLoading, setIsLoading] = useState(false); // Tambahkan state isLoading
+  const [isAdmin, setIsAdmin] = useState(false); // Status admin
 
-  // Periksa apakah pengguna adalah admin
   useEffect(() => {
     const checkAdminStatus = async () => {
       const user = auth.currentUser;
@@ -42,9 +43,9 @@ export default function ManageGelar() {
     checkAdminStatus();
   }, []);
 
-  // Ambil data dari Firestore
   useEffect(() => {
     const fetchPosts = async () => {
+      setIsLoading(true); // Set isLoading to true saat memulai fetch
       try {
         const querySnapshot = await getDocs(collection(db, "gelarPosts"));
         const postsData: Post[] = querySnapshot.docs.map((doc) => ({
@@ -54,14 +55,13 @@ export default function ManageGelar() {
         setPosts(postsData);
       } catch (error) {
         console.error("Error fetching posts: ", error);
-        alert("Error fetching posts. Periksa pengaturan Firestore.");
+      } finally {
+        setIsLoading(false); // Set isLoading to false ketika fetch selesai
       }
     };
-
     fetchPosts();
   }, []);
 
-  // Fungsi untuk menambah posting baru ke Firestore
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -79,7 +79,6 @@ export default function ManageGelar() {
     try {
       setUploading(true);
 
-      // Upload gambar ke Firebase Storage
       const storageRef = ref(storage, `images/${Date.now()}_${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -96,14 +95,13 @@ export default function ManageGelar() {
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
-          // Simpan data posting ke Firestore
           await addDoc(collection(db, "gelarPosts"), {
             title,
             content,
             imageUrl: downloadURL,
             createdAt: new Date().toLocaleDateString(),
-            likes: 0, // Tambahkan field likes
-            views: 0, // Tambahkan field views
+            likes: 0,
+            views: 0,
           });
 
           setTitle("");
@@ -120,7 +118,6 @@ export default function ManageGelar() {
     }
   };
 
-  // Fungsi untuk menghapus posting, hanya jika isAdmin = true
   const handleDelete = async (id: string) => {
     if (!isAdmin) {
       alert("Anda tidak memiliki izin untuk menghapus postingan.");
@@ -139,7 +136,6 @@ export default function ManageGelar() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-10">
-        {/* Form Tambah Postingan */}
         <form onSubmit={handleSubmit} className="mb-6">
           <h2 className="text-2xl font-bold text-bluetiful mb-4">Tambah Postingan Baru</h2>
           <input
@@ -173,22 +169,23 @@ export default function ManageGelar() {
           </button>
         </form>
 
-        {/* Render PostCard dari Firestore */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
-          <PostCard
-            key={post.id}
-            id={post.id}
-            title={post.title}
-            content={post.content}
-            imageUrl={post.imageUrl}
-            createdAt={post.createdAt}
-            likes={post.likes}
-            onDelete={() => handleDelete(post.id)}
-            isAdmin={isAdmin} 
-          />
+            <PostCard
+              key={post.id}
+              id={post.id}
+              title={post.title}
+              content={post.content}
+              imageUrl={post.imageUrl}
+              createdAt={post.createdAt}
+              likes={post.likes}
+              onDelete={() => handleDelete(post.id)}
+              isAdmin={isAdmin}
+            />
           ))}
         </div>
+
+        {isLoading && <Loader />} 
       </div>
     </div>
   );

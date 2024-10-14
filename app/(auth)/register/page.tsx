@@ -108,7 +108,7 @@ const RegisterForm = () => {
         <div className="flex flex-col items-center space-y-4">
 
           {/* Pilih gambar profil */}
-          <input type="file" accept="image/*" onChange={handleFileChange} className="mb-4" />
+          {/* <input type="file" accept="image/*" onChange={handleFileChange} className="mb-4" /> */}
 
           {/* Register dengan Google */}
           <button

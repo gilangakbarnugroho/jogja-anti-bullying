@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { FC, ReactNode } from 'react';
 import "../../styles/globals.css";
-import Header from "../../components/ui/Header";
-import Nav from "../../components/ui/Nav";
-import Footer from "../../components/ui/Footer";
 import { Toaster } from "react-hot-toast";
 
 const plusJakartaSans = localFont({
@@ -15,13 +12,13 @@ const plusJakartaSans = localFont({
 
 
 export const metadata: Metadata = {
-  title: "Jogja Anti Bullying - Kanal Digital Anti Bullying",
+  title: "Jogja Anti Bullying",
   description: "Gerakan Digital untuk Stop Bullying: Program, Artikel, dan Sumber Daya untuk Membuat Perubahan",
   icons: {
     icon:"favicon.ico",
   },
   openGraph: {
-    title: "Jogja Anti Bullying - Kanal Digital Anti Bullying",
+    title: "Jogja Anti Bullying",
     description:
       "Gerakan Digital untuk Stop Bullying: Program, Artikel, dan Sumber Daya untuk Membuat Perubahan",
     images: [
@@ -38,13 +35,10 @@ const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
       <body
         className={`${plusJakartaSans.variable} antialiased min-h-screen flex flex-col`}
       >
-        <Header />
         <Toaster />
         <main className="relative z-10">
           {children}
         </main>
-        <Nav />
-        <Footer />
       </body>
     </html>
   );

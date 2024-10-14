@@ -15,6 +15,12 @@ const LoginPage = () => {
   // Fungsi untuk login menggunakan Google
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
+
+    // Force account selection by setting the custom parameter
+    provider.setCustomParameters({
+      prompt: 'select_account',
+    });
+
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -69,6 +75,9 @@ const LoginPage = () => {
             </p>
           </div>
         </div>
+
+        {/* Display error */}
+        {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
       </div>
     </div>
   );

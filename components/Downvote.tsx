@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { auth, db, functions } from '../firebase/firebaseConfig';
-import { httpsCallable } from 'firebase/functions';
-import { doc, getDoc } from 'firebase/firestore';
-import { BiSolidDislike } from 'react-icons/bi';
+import { useState, useEffect } from "react";
+import { auth, db } from "../firebase/firebaseConfig";
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { BiSolidDislike } from "react-icons/bi";
 
 interface DownvoteProps {
-  postId: string;  // Explicitly define the type of postId as string
+  postId: string;
 }
 
 const Downvote: React.FC<DownvoteProps> = ({ postId }) => {
@@ -20,13 +19,14 @@ const Downvote: React.FC<DownvoteProps> = ({ postId }) => {
       const postRef = doc(db, `posts/${postId}`);
       const postDoc = await getDoc(postRef);
       if (postDoc.exists()) {
-        setDownvotes(postDoc.data().downvotes || []);
+        setDownvotes(postDoc.data().downvotes || []); // Ambil downvotes sebagai array
       }
     };
 
     if (auth.currentUser) {
       setUserId(auth.currentUser.uid);
     }
+
     fetchVotes();
   }, [postId]);
 
@@ -34,18 +34,25 @@ const Downvote: React.FC<DownvoteProps> = ({ postId }) => {
     if (!userId || loading) return;
 
     setLoading(true);
-    const votePost = httpsCallable(functions, 'votePost');
+    const postRef = doc(db, `posts/${postId}`);
 
     try {
-      await votePost({ postId, voteType: 'downvote' });
       if (downvotes.includes(userId)) {
-        setDownvotes(downvotes.filter(id => id !== userId));
+        // Jika sudah downvote, hapus downvote user dari array
+        await updateDoc(postRef, {
+          downvotes: arrayRemove(userId),
+        });
+        setDownvotes(downvotes.filter((id) => id !== userId));
       } else {
+        // Tambahkan user ke array downvotes dan hapus dari upvotes jika ada
+        await updateDoc(postRef, {
+          downvotes: arrayUnion(userId),
+          upvotes: arrayRemove(userId),
+        });
         setDownvotes([...downvotes, userId]);
       }
     } catch (error) {
-      console.error('Error voting:', error);
-      alert('Gagal melakukan voting.');
+      console.error("Error downvoting:", error);
     } finally {
       setLoading(false);
     }
@@ -54,7 +61,9 @@ const Downvote: React.FC<DownvoteProps> = ({ postId }) => {
   return (
     <button
       onClick={handleDownvote}
-      className={`p-2 rounded-full flex items-center space-x-1 ${downvotes.includes(userId || '') ? 'text-red-500' : 'text-gray-400'} hover:text-bluetiful`}
+      className={`p-2 rounded-full flex items-center space-x-1 ${
+        downvotes.includes(userId || "") ? "text-red-500" : "text-gray-400"
+      } hover:text-bluetiful`}
       aria-label="Dislike"
       disabled={loading}
     >

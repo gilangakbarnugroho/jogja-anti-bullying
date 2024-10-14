@@ -6,9 +6,16 @@ import React, { useState, useEffect } from "react";
 import { CgOptions } from "react-icons/cg";
 import { LuSearch } from "react-icons/lu";
 import { FaTimes } from "react-icons/fa";
-import { isAdmin, auth } from "../../firebase/firebaseConfig";
+import { auth, db } from "../../firebase/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { VscAccount } from "react-icons/vsc";
+import { IoChatboxEllipses } from "react-icons/io5";
+import { IoSearch } from "react-icons/io5";
+import { IoPeopleCircleOutline } from "react-icons/io5";
+import { PiCertificateBold } from "react-icons/pi";
+import { ImQuotesLeft } from "react-icons/im";
+import { MdOutlineSpaceDashboard } from "react-icons/md";
 
 const links = [
   ["Ruang Bincang", "/ruang-bincang"],
@@ -18,20 +25,11 @@ const links = [
 ];
 
 function Header() {
-  const [open, setOpen] = useState(false); // Open state for off-canvas menu
+  const [open, setOpen] = useState(false); // Open state for half-screen menu
   const [top, setTop] = useState<boolean>(true);
   const [user, setUser] = useState<any>(null);
-  const router = useRouter();
   const [isAdminUser, setIsAdminUser] = useState(false);
-
-  // Cek apakah user adalah admin
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const adminStatus = await isAdmin();
-      setIsAdminUser(adminStatus);
-    };
-    checkAdmin();
-  }, []);
+  const router = useRouter();
 
   // Update tampilan header saat scroll
   const scrollHandler = () => {
@@ -44,20 +42,53 @@ function Header() {
     return () => window.removeEventListener("scroll", scrollHandler);
   }, [top]);
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden"; 
+    } else {
+      document.body.style.overflow = "auto"; 
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [open]);
+
   // Mengatur state user berdasarkan Firebase Authentication
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
+        checkAdminRole(user.uid); // Cek apakah user adalah admin
       } else {
         setUser(null);
+        setIsAdminUser(false); // Reset admin status
       }
     });
     return () => unsubscribe();
   }, []);
 
+  // Cek apakah user memiliki role "admin"
+  const checkAdminRole = async (uid: string) => {
+    try {
+      const userDocRef = doc(db, "users", uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        if (userData.role === "admin") {
+          setIsAdminUser(true);
+        } else {
+          setIsAdminUser(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user role: ", error);
+    }
+  };
+
   return (
-    <header className={`fixed w-full z-30 bg-opacity-90 transition duration-300 ease-in-out ${!top ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
+    <header className={`fixed w-full z-30 bg-opacity-90 transition duration-300 ease-in-out ${!top && !open ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
       <div className="mx-auto max-w-6xl px-5 md:px-10">
         <div className="flex items-center justify-between py-5">
           {/* Logo */}
@@ -105,52 +136,63 @@ function Header() {
         </div>
       </div>
 
-      {/* Off-Canvas Menu for Mobile */}
+      {/* Right Half-Screen Menu for Mobile */}
       <div
-        className={`fixed top-0 right-0 h-full w-1/2 bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-full w-1/2 bg-white z-50 backdrop-blur-lg transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between p-5 border-b">
+          <div className="flex justify-end p-5 mr-5 border-b">
             {/* Close Button */}
             <button onClick={() => setOpen(false)} className="text-bluetiful font-semibold">
-              <FaTimes />
+              <FaTimes size={24} />
             </button>
           </div>
 
           <div className="flex flex-col p-5 text-bluetiful space-y-5">
-            {links.map((val, key) => (
-              <Link href={val[1]} key={key} className="hover:underline" onClick={() => setOpen(false)}>
-                {val[0]}
-              </Link>
-            ))}
-            {isAdminUser && (
-              <Link href="/dashboard-admin" className="hover:underline text-bluetiful">
-                Dashboard
-              </Link>
-            )}
-            <Link href="/search" className="btn-bluetiful flex items-center justify-start space-x-3">
-              <LuSearch size={24} />
-              <span>Search</span>
-            </Link>
+
             {user ? (
               <Link href="/profile" className="btn-bluetiful flex space-x-2" onClick={() => setOpen(false)}>
-                <VscAccount size={24} />
+                {/* <VscAccount size={24} /> */}
                 <span>Profil</span>
               </Link>
             ) : (
               <Link href="/login" className="btn-bluetiful flex space-x-2" onClick={() => setOpen(false)}>
-                <VscAccount size={24} />
                 <span>Login</span>
               </Link>
             )}
+            
+            <Link href="/search" className="btn-bluetiful flex space-x-2">
+              {/* <LuSearch size={24} /> */}
+              <span>Search</span>
+            </Link>
+
+            <div className="flex flex-col justify-between min-h-full space-y-5">
+
+            {links.map((val, key) => (
+              <Link href={val[1]} key={key} className="btn-bluetiful" onClick={() => setOpen(false)}>
+                {val[0]}
+              </Link>
+            ))}
+
+            <div className="grow"></div>
+
+            </div>
+
+            {isAdminUser && (
+              <Link href="/dashboard-admin" className="btn-bluetiful flex space-x-2">
+                < MdOutlineSpaceDashboard size={24} />
+                Dashboard
+              </Link>
+            )}
+
           </div>
         </div>
       </div>
 
       {/* Backdrop when menu is open */}
-      {open && <div className="fixed inset-0 bg-black opacity-30 z-40" onClick={() => setOpen(false)}></div>}
+      {open && <div className="fixed inset-0 bg-black backdrop-blur-lg opacity-50 z-40" onClick={() => setOpen(false)}></div>}
     </header>
   );
 }

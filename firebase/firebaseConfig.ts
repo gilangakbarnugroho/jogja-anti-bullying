@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, getDoc, doc } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getFunctions } from 'firebase/functions'; // Tambahkan Cloud Functions SDK
+import { getFunctions } from 'firebase/functions'; 
 
 // Firebase Configuration
 const firebaseConfig = {
@@ -21,7 +21,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const functions = getFunctions(app); // Inisialisasi Cloud Functions
+const functions = getFunctions(app);
 
 // Fungsi untuk mengecek apakah pengguna adalah admin
 export const isAdmin = async (): Promise<boolean> => {

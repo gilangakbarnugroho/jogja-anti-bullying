@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, doc, getDocs, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
+import { collection, doc, getDocs, deleteDoc, getDoc } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
 import Loader from "../../../../components/ui/Loader";
 import { toast } from "react-hot-toast";
@@ -11,26 +11,46 @@ interface Report {
   id: string;
   postId: string;
   reportedBy: string;
+  reportedAt: { seconds?: number };
+  contentType: "post" | "comment";
   reason: string;
-  reportedAt: any;
+  userName: string;
 }
 
 const ManageReports = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [reportedContents, setReportedContents] = useState<any>({});
   const router = useRouter();
 
   useEffect(() => {
-    // Ambil data laporan dari koleksi `reportedPost`
+    // Fetch all reports from the "reports" collection
     const fetchReports = async () => {
       try {
         setIsLoading(true);
-        const reportsSnapshot = await getDocs(collection(db, "reportedPosts"));
+        const reportsSnapshot = await getDocs(collection(db, "reports"));
         const reportData = reportsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Report[];
         setReports(reportData);
+
+        // Fetch reported content
+        const contents: any = {};
+        for (const report of reportData) {
+          let contentRef;
+          if (report.contentType === "post") {
+            contentRef = doc(db, "posts", report.postId);
+          } else if (report.contentType === "comment" && report.postId && report.id) {
+            contentRef = doc(db, `posts/${report.postId}/comments`, report.id);
+          }
+          
+          const contentSnap = await getDoc(contentRef);
+          if (contentSnap.exists()) {
+            contents[report.id] = contentSnap.data();
+          }
+        }
+        setReportedContents(contents);
       } catch (error) {
         console.error("Error fetching reports:", error);
       } finally {
@@ -41,63 +61,106 @@ const ManageReports = () => {
     fetchReports();
   }, []);
 
-  // Fungsi untuk menghapus postingan yang dilaporkan
-  const handleDeletePost = async (postId: string, reportId: string) => {
-    const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus postingan ini?");
+  // Delete a reported post or comment
+  const handleDeleteContent = async (postId: string, reportId: string) => {
+    const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus konten ini?");
     if (confirmDelete) {
       try {
-        // Hapus postingan dari koleksi `posts`
+        // Delete the post/comment from Firestore
         await deleteDoc(doc(db, "posts", postId));
         
-        // Hapus laporan dari koleksi `reportedPost`
-        await deleteDoc(doc(db, "reportedPosts", reportId));
+        // Remove the report from "reports" collection
+        await deleteDoc(doc(db, "reports", reportId));
         
-        // Update state setelah penghapusan
+        // Update state after deletion
         setReports((prevReports) => prevReports.filter((report) => report.id !== reportId));
-        toast.success("Postingan berhasil dihapus.");
+        toast.success("Konten berhasil dihapus.");
       } catch (error) {
-        console.error("Error deleting post:", error);
-        toast.error("Gagal menghapus postingan.");
+        console.error("Error deleting content:", error);
+        toast.error("Gagal menghapus konten.");
       }
+    }
+  };
+
+  const timeSince = (seconds: number) => {
+    const now = Date.now() / 1000;
+    const timeDifference = now - seconds;
+
+    const minutesPassed = Math.floor(timeDifference / 60);
+    const hoursPassed = Math.floor(timeDifference / 3600);
+    const daysPassed = Math.floor(hoursPassed / 24);
+
+    if (minutesPassed < 60) {
+      return `${minutesPassed} menit yang lalu`;
+    } else if (hoursPassed < 24) {
+      return `${hoursPassed} jam yang lalu`;
+    } else {
+      return `${daysPassed} hari yang lalu`;
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Loader /> {/* Tampilkan Loader saat memuat data */}
+        <Loader /> {/* Loader while fetching data */}
       </div>
     );
   }
 
   return (
     <div className="p-6 container mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-bluetiful">Manage Reported Posts</h1>
+      <h1 className="text-3xl font-bold mb-6 text-bluetiful">Manage Reported Content</h1>
       
       {reports.length > 0 ? (
         <div className="space-y-6">
           {reports.map((report) => (
             <div key={report.id} className="bg-white shadow-md rounded-lg p-4">
-              <h2 className="text-xl font-semibold text-gray-800">Post ID: {report.postId}</h2>
-              <p className="text-gray-600 mb-2">Dilaporkan oleh: {report.reportedBy}</p>
+              <h2 className="text-xl font-semibold text-gray-800">ID Konten: {report.postId}</h2>
+              <p className="text-gray-600 mb-2">Dilaporkan oleh: {report.userName}</p>
               <p className="text-gray-600 mb-2">Alasan: {report.reason}</p>
               <p className="text-xs text-gray-400 mb-4">
-                Dilaporkan pada: {new Date(report.reportedAt * 1000).toLocaleString()}
+                Dilaporkan pada: {report.reportedAt?.seconds ? timeSince(report.reportedAt.seconds) : "Waktu tidak tersedia"}
               </p>
 
-              {/* Tombol untuk melihat detail postingan atau menghapus */}
+              {/* Preview reported content */}
+              {reportedContents[report.id] ? (
+                <div className="bg-gray-100 p-2 rounded mb-4">
+                  {report.contentType === "post" ? (
+                    <>
+                      <h3 className="font-bold">Preview Post:</h3>
+                      <p>{reportedContents[report.id]?.content}</p>
+                      {reportedContents[report.id]?.fileURL && (
+                        <img
+                          src={reportedContents[report.id].fileURL}
+                          alt="Post"
+                          className="w-32 h-32 object-cover rounded-lg mt-2"
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="font-bold">Preview Comment:</h3>
+                      <p>{reportedContents[report.id]?.content}</p>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <p className="text-red-500">Konten yang dilaporkan tidak ditemukan.</p>
+              )}
+
+              {/* Action buttons */}
               <div className="flex space-x-4">
                 <button
                   onClick={() => router.push(`/ruang-bincang/${report.postId}`)}
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                  Lihat Postingan
+                  Lihat Konten
                 </button>
                 <button
-                  onClick={() => handleDeletePost(report.postId, report.id)}
+                  onClick={() => handleDeleteContent(report.postId, report.id)}
                   className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                 >
-                  Hapus Postingan
+                  Hapus Konten
                 </button>
               </div>
             </div>

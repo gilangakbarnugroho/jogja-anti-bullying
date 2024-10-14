@@ -5,14 +5,14 @@ import { FaQuoteLeft, FaNewspaper, FaExclamationTriangle, FaHome } from "react-i
 const Sidebar = () => {
   return (
     <div className="h-screen w-64 bg-bluetiful text-white fixed top-0 left-0 flex flex-col">
-      <div className="p-4 text-2xl font-semibold border-b border-bluetiful-200">
+      <Link href='/dashboard-admin' className="p-4 text-2xl font-semibold border-b border-bluetiful-200">
         
           Dashboard
         
-      </div>
+      </Link>
       <nav className="flex-1 p-4 space-y-4">
         {/* Link ke Halaman Dashboard */}
-        <Link href="/dashboard-admin" className="flex items-center space-x-2 hover:bg-bluetiful-400 px-3 py-2 rounded">
+        <Link href="/" className="flex items-center space-x-2 hover:bg-bluetiful-400 px-3 py-2 rounded">
           <FaHome />
           <span>Home</span>
         </Link>
