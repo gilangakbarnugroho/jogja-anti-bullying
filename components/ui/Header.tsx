@@ -112,9 +112,9 @@ function Header() {
 
           {/* Search & Profile/Account - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/search" className="bg-bluetiful rounded-full p-2 text-white hover:bg-white hover:text-bluetiful">
+            {/* <Link href="/search" className="bg-bluetiful rounded-full p-2 text-white hover:bg-white hover:text-bluetiful">
               <LuSearch size={20} />
-            </Link>
+            </Link> */}
 
             {user ? (
               <Link href="/profile" className="bg-bluetiful rounded-full p-2 text-white hover:bg-white hover:text-bluetiful">
@@ -163,10 +163,10 @@ function Header() {
               </Link>
             )}
             
-            <Link href="/search" className="btn-bluetiful flex space-x-2">
-              {/* <LuSearch size={24} /> */}
+            {/* <Link href="/search" className="btn-bluetiful flex space-x-2">
+              {/* <LuSearch size={24} /> 
               <span>Search</span>
-            </Link>
+            </Link> */}
 
             <div className="flex flex-col justify-between min-h-full space-y-5">
 

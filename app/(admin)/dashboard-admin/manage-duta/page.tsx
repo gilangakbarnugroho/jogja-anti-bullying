@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage, auth } from "../../../../firebase/firebaseConfig";
-import PostCard from "../../../../components/PostCard";
+import PostCard from "../../../../components/PostCardDuta";
 import Loader from "../../../../components/ui/Loader";
 import Modal from "../../../../components/ui/Modal";
 
@@ -12,7 +12,6 @@ interface Post {
   id: string;
   title: string;
   content: string;
-  category: string;
   imageUrl: string;
   createdAt: { seconds: number };
   approved: boolean;
@@ -20,11 +19,10 @@ interface Post {
   views: number;
 }
 
-export default function ManageGelar() {
+export default function ManageDuta() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +53,7 @@ export default function ManageGelar() {
     const fetchPosts = async () => {
       setIsLoading(true);
       try {
-        const querySnapshot = await getDocs(collection(db, "gelarPosts"));
+        const querySnapshot = await getDocs(collection(db, "dutaPosts")); // Ganti ke 'dutaPosts'
         const postsData: Post[] = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -74,7 +72,7 @@ export default function ManageGelar() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title || !content || !category || !file) {
+    if (!title || !content || !file) {
       alert("Judul, konten, kategori, dan gambar wajib diisi!");
       return;
     }
@@ -106,20 +104,18 @@ export default function ManageGelar() {
           const currentUser = auth.currentUser;
           const author = currentUser ? currentUser.email : "Anonim";
 
-          await addDoc(collection(db, "gelarPosts"), {
+          await addDoc(collection(db, "dutaPosts"), { // Ganti ke 'dutaPosts'
             title,
             content,
-            category,
             imageUrl: downloadURL,
             createdAt: new Date(),
-            author, 
-            approved: false, 
+            author,
+            approved: false,
             likes: 0,
           });
 
           setTitle("");
           setContent("");
-          setCategory("");
           setFile(null);
           setUploading(false);
           alert("Postingan berhasil ditambahkan! Tunggu persetujuan admin.");
@@ -135,7 +131,7 @@ export default function ManageGelar() {
   // Fungsi untuk mengubah status approved post
   const handleApprove = async (id: string, approved: boolean) => {
     try {
-      await updateDoc(doc(db, "gelarPosts", id), { approved });
+      await updateDoc(doc(db, "dutaPosts", id), { approved }); // Ganti ke 'dutaPosts'
       setPosts((prevPosts) =>
         prevPosts.map((post) => (post.id === id ? { ...post, approved } : post))
       );
@@ -153,7 +149,7 @@ export default function ManageGelar() {
     }
 
     try {
-      await deleteDoc(doc(db, "gelarPosts", id));
+      await deleteDoc(doc(db, "dutaPosts", id)); // Ganti ke 'dutaPosts'
       setPosts(posts.filter((post) => post.id !== id));
       alert("Postingan berhasil dihapus.");
     } catch (error) {
@@ -176,7 +172,6 @@ export default function ManageGelar() {
     setEditPost(post);
     setTitle(post.title);
     setContent(post.content);
-    setCategory(post.category);
   };
 
   // Fungsi untuk menutup modal edit
@@ -191,7 +186,7 @@ export default function ManageGelar() {
 
     if (!editPost) return;
 
-    if (!title || !content || !category) {
+    if (!title || !content) {
       alert("Judul, konten, dan kategori wajib diisi!");
       return;
     }
@@ -221,18 +216,16 @@ export default function ManageGelar() {
           );
         });
       }
-      
 
-      await updateDoc(doc(db, "gelarPosts", editPost.id), {
+      await updateDoc(doc(db, "dutaPosts", editPost.id), { // Ganti ke 'dutaPosts'
         title,
         content,
-        category,
         imageUrl,
       });
 
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
-          post.id === editPost.id ? { ...post, title, content, category, imageUrl } : post
+          post.id === editPost.id ? { ...post, title, content, imageUrl } : post
         )
       );
 
@@ -268,18 +261,6 @@ export default function ManageGelar() {
             className="mb-2 w-full text-gray-500 px-4 py-2 border rounded"
             required
           ></textarea>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="mb-2 w-full text-gray-500 px-4 py-2 border rounded"
-            required
-          >
-            <option value="">Pilih Kategori</option>
-            <option value="Pendidikan">Pendidikan</option>
-            <option value="Sosial">Sosial</option>
-            <option value="Budaya">Budaya</option>
-            <option value="Teknologi">Teknologi</option>
-          </select>
           <input
             type="file"
             onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
@@ -301,21 +282,18 @@ export default function ManageGelar() {
         {/* Tampilkan post dalam grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           {posts.map((post) => (
-            <div key={post.id} className="border p-4 rounded-md shadow-md"            >
-              <div 
-                onClick={() => 
-                handlePostClick(post)} >
-              <PostCard
-                id={post.id}
-                title={post.title}
-                content={post.content}
-                category={post.category}
-                imageUrl={post.imageUrl}
-                createdAt={post.createdAt.seconds}
-                likes={post.likes}
-                onDelete={() => handleDelete(post.id)}
-                isAdmin={isAdmin}
-              />
+            <div key={post.id} className="border p-4 rounded-md shadow-md">
+              <div onClick={() => handlePostClick(post)}>
+                <PostCard
+                  id={post.id}
+                  title={post.title}
+                  content={post.content}
+                  imageUrl={post.imageUrl}
+                  createdAt={post.createdAt.seconds}
+                  likes={post.likes}
+                  onDelete={() => handleDelete(post.id)}
+                  isAdmin={isAdmin}
+                />
               </div>
               <div className="mt-2 flex justify-between text-gray-700">
                 <label>
@@ -387,18 +365,6 @@ export default function ManageGelar() {
                 className="mb-2 w-full px-4 py-2 border rounded"
                 required
               ></textarea>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="mb-2 w-full px-4 py-2 border rounded"
-                required
-              >
-                <option value="">Pilih Kategori</option>
-                <option value="Pendidikan">Pendidikan</option>
-                <option value="Sosial">Sosial</option>
-                <option value="Budaya">Budaya</option>
-                <option value="Teknologi">Teknologi</option>
-              </select>
               <input
                 type="file"
                 onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}

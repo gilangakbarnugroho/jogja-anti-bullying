@@ -37,7 +37,7 @@ const RuangBincangPage = async () => {
   const posts = await fetchPosts();
 
   return (
-    <div className="container mx-auto p-4 mt-20">
+    <div className="container max-w-4xl mx-auto p-4 mt-20">
       <h1 className="text-3xl font-bold mb-6 text-center text-bluetiful">Ruang Bincang</h1>
       <Suspense fallback={<Loader />}>
         <RuangBincangClient initialPosts={posts} /> 

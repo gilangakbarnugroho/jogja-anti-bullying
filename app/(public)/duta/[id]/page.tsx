@@ -42,7 +42,7 @@ const formatContent = (content: string) => {
 
 // Fetcher function untuk SWR
 const fetchPostDetail = async (id: string) => {
-  const docRef = doc(db, "gelarPosts", id);
+  const docRef = doc(db, "dutaPosts", id); // Ganti koleksi menjadi dutaPosts
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
@@ -54,7 +54,7 @@ const fetchPostDetail = async (id: string) => {
 
 const fetchApprovedPosts = async () => {
   const approvedPostsQuery = query(
-    collection(db, "gelarPosts"),
+    collection(db, "dutaPosts"), // Ganti koleksi menjadi dutaPosts
     where("approved", "==", true)
   );
   const querySnapshot = await getDocs(approvedPostsQuery);
@@ -65,13 +65,13 @@ const fetchApprovedPosts = async () => {
   return approvedPosts;
 };
 
-const DetailGelar = () => {
+const DetailDuta = () => { // Ubah nama komponen menjadi DetailDuta
   const router = useRouter();
   const params = useParams();
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id || "";
 
   const { data: post, error, isLoading } = useSWR(
-    id ? `gelarPost/${id}` : null,
+    id ? `dutaPost/${id}` : null,
     () => fetchPostDetail(id),
     {
       revalidateOnFocus: false,
@@ -131,7 +131,7 @@ const DetailGelar = () => {
           <ul className="space-y-4">
             {recommendedPosts.map((recommendedPost) => (
               <li key={recommendedPost.id}>
-                <Link href={`/gelar/${recommendedPost.id}`}>
+                <Link href={`/duta/${recommendedPost.id}`}>
                   <div className="hover:bg-gray-100 p-2 rounded-md cursor-pointer">
                     <h3 className="text-md font-semibold text-bluetiful">{recommendedPost.title}</h3>
                     <p className="text-sm text-gray-500">
@@ -150,4 +150,4 @@ const DetailGelar = () => {
   );
 };
 
-export default DetailGelar;
+export default DetailDuta;

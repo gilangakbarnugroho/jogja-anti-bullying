@@ -7,11 +7,11 @@ interface PostCardProps {
   id: string;
   title: string;
   content: string;
-  category?: string; // Category is now optional
+  category?: string; 
   imageUrl: string;
   createdAt: number;
   likes: number;
-  onDelete?: () => void; // onDelete is optional, show only if provided
+  onDelete?: () => void;
   isAdmin: boolean;
 }
 
@@ -40,7 +40,7 @@ const truncateContent = (content: string, wordLimit: number) => {
   return content;
 };
 
-const PostCard: React.FC<PostCardProps> = ({
+const PostCardDuta: React.FC<PostCardProps> = ({
   id,
   title,
   content,
@@ -75,7 +75,7 @@ const PostCard: React.FC<PostCardProps> = ({
         )}
 
         {/* Post title with link */}
-        <Link href={`/gelar/${id}`} className="hover:underline">
+        <Link href={`/duta/${id}`} className="hover:underline">
           <h2 className="font-bold text-xl text-bluetiful mb-2">{title}</h2>
         </Link>
 
@@ -107,4 +107,4 @@ const PostCard: React.FC<PostCardProps> = ({
   );
 };
 
-export default PostCard;
+export default PostCardDuta;

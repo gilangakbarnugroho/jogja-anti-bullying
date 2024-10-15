@@ -156,7 +156,7 @@ const NewPostForm = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 my-4">
+      <form onSubmit={handleSubmit} className="flex flex-col max-w-4xl space-y-4 my-4">
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}

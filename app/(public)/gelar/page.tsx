@@ -1,55 +1,39 @@
 "use client";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../../../firebase/firebaseConfig";
+import { db, storage } from "../../../firebase/firebaseConfig";
 import Image from "next/image";
-import PostCard from "../../../components/PostCard"; 
+import PostCard from "../../../components/PostCard";
+import Modal from "../../../components/ui/Modal"; 
+import GelarPostForm from "../../../components/GelarPostForm";
 
 interface Post {
   id: string;
   title: string;
   content: string;
+  category: string;
   imageUrl: string;
-  createdAt: string;
+  createdAt: { seconds: number };
   likes: number;
-  views: number;
+  approved: boolean;
 }
 
 export default function GelarPelajar() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State untuk modal
 
-  // Periksa apakah pengguna adalah admin
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const docRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(docRef);
-        if (userDoc.exists() && userDoc.data().role === "admin") {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
-      }
-    };
-    checkAdminStatus();
-  }, []);
-
-  // Ambil data dari Firestore dengan caching menggunakan useMemo
+  // Fungsi untuk fetch posts dengan filtering approved dan optimasi data
   const fetchPosts = useCallback(async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "gelarPosts"));
-      const postsData: Post[] = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Post[];
+      const postsData: Post[] = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter((post) => post.approved === true) as Post[];
+
       setPosts(postsData);
     } catch (error) {
       console.error("Error fetching posts: ", error);
@@ -57,55 +41,76 @@ export default function GelarPelajar() {
     }
   }, []);
 
+  // Gunakan useEffect untuk memanggil fetchPosts
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
 
-  // Fungsi untuk menghapus posting jika isAdmin
-  const handleDelete = async (id: string) => {
-    if (!isAdmin) {
-      alert("Anda tidak memiliki izin untuk menghapus postingan.");
-      return;
-    }
-    try {
-      await deleteDoc(doc(db, "gelarPosts", id));
-      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
-      alert("Postingan berhasil dihapus.");
-    } catch (error) {
-      console.error("Error deleting post:", error);
-    }
+  // Optimasi dengan useMemo untuk caching posts
+  const optimizedPosts = useMemo(() => posts, [posts]);
+
+  // Fungsi untuk membuka dan menutup modal
+  const toggleModal = () => {
+    setShowModal((prev) => !prev);
   };
 
   return (
     <div className="min-h-screen">
+      {/* Header Section */}
       <header className="bg-bluetiful text-white pt-10 text-center">
         <div className="flex justify-center items-center">
-          <Image src="/gelar-pelajar.png" width={720} height={720} alt="Gelar Pelajar" className="w-72 h-80" priority />
+          <Image
+            src="/gelar-pelajar.png"
+            width={720}
+            height={720}
+            alt="Gelar Pelajar"
+            className="w-72 h-80"
+            priority
+          />
         </div>
         <h1 className="text-4xl font-bold mt-4">Gelar Pelajar</h1>
-        <p className="text-lg mt-2">Wahana ekspresi potensi berbasis Multiple Intelligence untuk merealisasikan minat, bakat, dan kreativitas pelajar.</p>
+        <p className="text-lg mt-2">
+          Wahana ekspresi potensi berbasis Multiple Intelligence untuk merealisasikan minat, bakat, dan kreativitas pelajar.
+        </p>
+
+        {/* Button untuk membuka form unggah GelarPost */}
+        <button
+          className="mt-6 px-6 py-3 bg-white text-bluetiful font-semibold rounded-full shadow-lg hover:bg-bluetiful hover:text-white transition"
+          onClick={toggleModal}
+        >
+          Unggah GelarPost
+        </button>
+
         <div className="w-full mt-8">
           <Image src="/batik.png" width={720} height={720} alt="batik" className="w-full" />
         </div>
       </header>
 
+      {/* Content Section */}
       <div className="container mx-auto px-4 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => (
+          {optimizedPosts.map((post) => (
             <PostCard
               key={post.id}
               id={post.id}
               title={post.title}
               content={post.content}
+              category={post.category}
               imageUrl={post.imageUrl}
-              createdAt={post.createdAt}
+              createdAt={post.createdAt?.seconds || Date.now() / 1000}
               likes={post.likes}
-              onDelete={() => handleDelete(post.id)}
-              isAdmin={isAdmin}
+              isAdmin={false}
             />
           ))}
         </div>
       </div>
+
+      {/* Modal untuk form upload GelarPost */}
+      {showModal && (
+        <Modal onClose={toggleModal}>
+          <GelarPostForm onClose={toggleModal} />
+        </Modal>
+      )}
     </div>
   );
 }
