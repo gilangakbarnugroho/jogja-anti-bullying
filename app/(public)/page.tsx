@@ -18,8 +18,6 @@ const HomePage: FC = () => {
       <div className="flex flex-col w-full">
         <Hero />
         <Clients />
-        <Gelar />
-        <Duta />
       </div>
     </div>
   );

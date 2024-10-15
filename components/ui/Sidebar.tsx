@@ -1,14 +1,15 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FaQuoteLeft, FaUserGraduate, FaNewspaper, FaExclamationTriangle, FaHome, FaUserShield } from "react-icons/fa";
+import { FaQuoteLeft, FaUserGraduate, FaNewspaper, FaExclamationTriangle, FaHome, FaUserShield, FaBars } from "react-icons/fa";
 import { auth, db } from "../../firebase/firebaseConfig";
 import { getDoc, doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 const Sidebar = () => {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false); // Menambah state untuk kontrol expand/collapse
 
   useEffect(() => {
     const checkSuperAdmin = async (user: any) => {
@@ -32,40 +33,57 @@ const Sidebar = () => {
     return () => unsubscribe();
   }, []);
 
+  // Fungsi untuk toggle expand/collapse sidebar
+  const toggleSidebar = () => {
+    setIsSidebarExpanded(!isSidebarExpanded);
+  };
+
   return (
-    <div className="h-screen w-64 bg-bluetiful text-white fixed top-0 left-0 flex flex-col">
-      <Link href="/dashboard-admin" className="p-4 text-2xl font-semibold border-b border-bluetiful-200">
+    <div className={`h-screen bg-bluetiful text-white fixed top-0 left-0 transition-all duration-300
+      ${isSidebarExpanded ? "w-64" : "w-16"} flex flex-col`}>
+      
+      {/* Toggle button */}
+      <button
+        onClick={toggleSidebar}
+        className="p-4 focus:outline-none hover:bg-bluetiful-400"
+      >
+        <FaBars />
+      </button>
+      
+      <Link href="/dashboard-admin" className={`p-4 text-2xl font-semibold border-b border-bluetiful-200 transition-opacity
+        ${isSidebarExpanded ? "opacity-100" : "opacity-0"} overflow-hidden`}>
         Dashboard
       </Link>
+      
       <nav className="flex-1 p-4 space-y-4">
         {/* Link ke Home */}
         <Link href="/" className="flex items-center space-x-2 hover:bg-bluetiful-400 px-3 py-2 rounded">
           <FaHome />
-          <span>Home</span>
+          {isSidebarExpanded && <span>Home</span>}
         </Link>
 
         {/* Link ke Manage Quotes */}
         <Link href="/dashboard-admin/manage-quotes" className="flex items-center space-x-2 hover:bg-bluetiful-400 px-3 py-2 rounded">
           <FaQuoteLeft />
-          <span>Manage Quotes</span>
+          {isSidebarExpanded && <span>Manage Quotes</span>}
         </Link>
 
         {/* Link ke Manage DutaPost */}
         <Link href="/dashboard-admin/manage-duta" className="flex items-center space-x-2 hover:bg-bluetiful-400 px-3 py-2 rounded">
           <FaUserGraduate />
-          <span>Manage Duta</span>
+          {isSidebarExpanded && <span>Manage Duta</span>}
         </Link>
 
         {/* Link ke Manage GelarPost */}
         <Link href="/dashboard-admin/manage-gelar" className="flex items-center space-x-2 hover:bg-bluetiful-400 px-3 py-2 rounded">
           <FaNewspaper />
-          <span>Manage Gelar</span>
+          {isSidebarExpanded && <span>Manage Gelar</span>}
         </Link>
 
         {/* Link ke Manage Report */}
         <Link href="/dashboard-admin/manage-reports" className="flex items-center space-x-2 hover:bg-bluetiful-400 px-3 py-2 rounded">
           <FaExclamationTriangle />
-          <span>Report Posts</span>
+          {isSidebarExpanded && <span>Report Posts</span>}
         </Link>
 
         <div className="grow"></div>
@@ -74,12 +92,14 @@ const Sidebar = () => {
         {isSuperAdmin && (
           <Link href="/dashboard-admin/manage-account" className="flex items-center space-x-2 text-bluetiful bg-bluetiful-50 hover:bg-bluetiful-800 px-3 py-2 rounded">
             <FaUserShield />
-            <span>Manage Account</span>
+            {isSidebarExpanded && <span>Manage Account</span>}
           </Link>
         )}
       </nav>
+
       {/* Footer Sidebar */}
-      <div className="p-4 border-t border-bluetiful-200 text-sm text-center">
+      <div className={`p-4 border-t border-bluetiful-200 text-sm text-center transition-opacity
+        ${isSidebarExpanded ? "opacity-100" : "opacity-0"} overflow-hidden`}>
         &copy; 2024 Jogja Anti Bullying
       </div>
     </div>

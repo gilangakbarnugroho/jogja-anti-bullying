@@ -13,9 +13,9 @@ const MobileNavigation = () => {
           <IoChatboxEllipses size={32} />
         </Link>
 
-        <Link href="/search" className="flex flex-col items-center text-bluetiful hover:text-gray-700">
+        {/* <Link href="/search" className="flex flex-col items-center text-bluetiful hover:text-gray-700">
           <IoSearch size={32} />
-        </Link>
+        </Link> */}
 
         <Link href="/duta" className="flex flex-col items-center text-bluetiful hover:text-gray-700">
           <IoPeopleCircleOutline size={32} />

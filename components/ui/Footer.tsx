@@ -61,16 +61,16 @@ export default function Footer() {
             <h6 className="text-bluetiful font-bold mb-2">Halaman</h6>
             <ul className="text-sm">
               <li className="mb-2">
-                <a href="/about" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Ruang Bincang</a>
+                <a href="/ruang-bincang" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Ruang Bincang</a>
               </li>
               <li className="mb-2">
-                <a href="/news" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Duta</a>
+                <a href="/duta" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Duta</a>
               </li>
               <li className="mb-2">
-                <a href="#0" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Gelar</a>
+                <a href="#gelar" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Gelar</a>
               </li>
               <li className="mb-2">
-                <a href="/community" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Quotes</a>
+                <a href="/quotes" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Quotes</a>
               </li>
             </ul>
           </div>
