@@ -122,13 +122,15 @@ const ManageReports = () => {
                 <div className="bg-gray-100 p-2 rounded mb-4">
                   {report.contentType === "post" ? (
                     <>
-                      <h3 className="font-bold">Preview Post:</h3>
-                      <p>{reportedContents[report.id]?.content}</p>
+                      <h3 className="font-bold text-bluetiful">Preview Post:</h3>
+                      <p className="text-gray-700">{reportedContents[report.id]?.content}</p>
                       {reportedContents[report.id]?.fileURL && (
                         <Image
                           src={reportedContents[report.id].fileURL}
                           alt="Post"
                           className="w-32 h-32 object-cover rounded-lg mt-2"
+                          width={128} // Tentukan ukuran gambar
+                          height={128} // Tentukan ukuran gambar
                         />
                       )}
                     </>
