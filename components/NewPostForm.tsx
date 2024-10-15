@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faUser, faUserSecret, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { LiaTimesSolid } from "react-icons/lia";
 import router from "next/router";
+import Image from "next/image";
 
 interface Post {
   id: string;
@@ -176,7 +177,10 @@ const NewPostForm = () => {
         {previewURL && (
           <div className="relative">
             {file?.type.startsWith("image/") ? (
-              <img src={previewURL} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+              <Image src={previewURL} 
+               fill
+               alt="Preview" 
+               className="w-32 h-32 object-cover rounded-lg" />
             ) : (
               <video className="w-32 h-32 rounded-lg" controls>
                 <source src={previewURL} />

@@ -6,6 +6,7 @@ import { collection, doc, getDocs, deleteDoc, getDoc } from "firebase/firestore"
 import { db } from "../../../../firebase/firebaseConfig";
 import Loader from "../../../../components/ui/Loader";
 import { toast } from "react-hot-toast";
+import Image from "next/image";
 
 interface Report {
   id: string;
@@ -24,7 +25,6 @@ const ManageReports = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch all reports from the "reports" collection
     const fetchReports = async () => {
       try {
         setIsLoading(true);
@@ -35,7 +35,6 @@ const ManageReports = () => {
         })) as Report[];
         setReports(reportData);
 
-        // Fetch reported content
         const contents: any = {};
         for (const report of reportData) {
           let contentRef;
@@ -44,10 +43,13 @@ const ManageReports = () => {
           } else if (report.contentType === "comment" && report.postId && report.id) {
             contentRef = doc(db, `posts/${report.postId}/comments`, report.id);
           }
-          
-          const contentSnap = await getDoc(contentRef);
-          if (contentSnap.exists()) {
-            contents[report.id] = contentSnap.data();
+
+          // Pastikan contentRef tidak undefined sebelum memanggil getDoc
+          if (contentRef) {
+            const contentSnap = await getDoc(contentRef);
+            if (contentSnap.exists()) {
+              contents[report.id] = contentSnap.data();
+            }
           }
         }
         setReportedContents(contents);
@@ -61,18 +63,12 @@ const ManageReports = () => {
     fetchReports();
   }, []);
 
-  // Delete a reported post or comment
   const handleDeleteContent = async (postId: string, reportId: string) => {
     const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus konten ini?");
     if (confirmDelete) {
       try {
-        // Delete the post/comment from Firestore
         await deleteDoc(doc(db, "posts", postId));
-        
-        // Remove the report from "reports" collection
         await deleteDoc(doc(db, "reports", reportId));
-        
-        // Update state after deletion
         setReports((prevReports) => prevReports.filter((report) => report.id !== reportId));
         toast.success("Konten berhasil dihapus.");
       } catch (error) {
@@ -102,7 +98,7 @@ const ManageReports = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Loader /> {/* Loader while fetching data */}
+        <Loader />
       </div>
     );
   }
@@ -122,7 +118,6 @@ const ManageReports = () => {
                 Dilaporkan pada: {report.reportedAt?.seconds ? timeSince(report.reportedAt.seconds) : "Waktu tidak tersedia"}
               </p>
 
-              {/* Preview reported content */}
               {reportedContents[report.id] ? (
                 <div className="bg-gray-100 p-2 rounded mb-4">
                   {report.contentType === "post" ? (
@@ -130,7 +125,7 @@ const ManageReports = () => {
                       <h3 className="font-bold">Preview Post:</h3>
                       <p>{reportedContents[report.id]?.content}</p>
                       {reportedContents[report.id]?.fileURL && (
-                        <img
+                        <Image
                           src={reportedContents[report.id].fileURL}
                           alt="Post"
                           className="w-32 h-32 object-cover rounded-lg mt-2"
@@ -148,7 +143,6 @@ const ManageReports = () => {
                 <p className="text-red-500">Konten yang dilaporkan tidak ditemukan.</p>
               )}
 
-              {/* Action buttons */}
               <div className="flex space-x-4">
                 <button
                   onClick={() => router.push(`/ruang-bincang/${report.postId}`)}

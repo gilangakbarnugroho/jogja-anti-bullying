@@ -95,7 +95,6 @@ const ManageQuotes = () => {
   };
   
 
-  // Update quote yang sudah ada di Firestore
   const updateQuote = async () => {
     if (!editQuoteId) return;
   
@@ -105,22 +104,24 @@ const ManageQuotes = () => {
       return;
     }
   
-    let updatedImageURL = newQuote.image; // Default ke gambar yang sudah ada
+    let updatedImageURL: string = newQuote.image; // Default ke gambar yang sudah ada
   
     // Jika pengguna memilih gambar baru, upload gambar baru
     if (imageFile) {
-      updatedImageURL = await handleImageUpload(); // Tunggu upload gambar baru
-      if (!updatedImageURL) {
+      const uploadResult = await handleImageUpload(); // Tunggu upload gambar baru
+      if (!uploadResult) {
         // Jika upload gambar gagal, hentikan proses update
+        toast.error("Gagal mengupload gambar. Proses update dihentikan.");
         return;
       }
+      updatedImageURL = uploadResult; // Assign nilai yang berhasil diupload
     }
   
     try {
       // Update quote di Firestore dengan caption dan gambar baru (jika ada)
       await updateDoc(doc(db, "quotes", editQuoteId), {
         caption: newQuote.caption,
-        image: updatedImageURL,
+        image: updatedImageURL, // Pastikan hanya menggunakan string
       });
   
       // Update state dengan data yang diperbarui
@@ -128,7 +129,7 @@ const ManageQuotes = () => {
         quote.id === editQuoteId ? { ...quote, caption: newQuote.caption, image: updatedImageURL } : quote
       );
       setQuotes(updatedQuotes);
-      
+  
       // Reset form dan state setelah update berhasil
       setEditQuoteId(null);
       setNewQuote({ caption: "", image: "" });
@@ -140,6 +141,8 @@ const ManageQuotes = () => {
       toast.error("Gagal memperbarui quote.");
     }
   };
+  
+
   
 
   // Hapus quote dari Firestore

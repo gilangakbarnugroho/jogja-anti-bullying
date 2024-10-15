@@ -187,7 +187,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
       {previewURL && (
         <div className="relative">
           {file?.type.startsWith("image/") ? (
-            <img src={previewURL} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+            <Image src={previewURL} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
           ) : (
             <video className="w-32 h-32 rounded-lg" controls>
               <source src={previewURL} />

@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { collection, getDocs, addDoc } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../../firebase/firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../../firebase/firebaseConfig";
 import Image from "next/image";
 import PostCard from "../../../components/PostCard";
 import Modal from "../../../components/ui/Modal"; 
@@ -16,7 +15,7 @@ interface Post {
   imageUrl: string;
   createdAt: { seconds: number };
   likes: number;
-  approved: boolean;
+  approved?: boolean; // Properti ini opsional
 }
 
 export default function GelarPelajar() {
@@ -32,7 +31,7 @@ export default function GelarPelajar() {
           id: doc.id,
           ...doc.data(),
         }))
-        .filter((post) => post.approved === true) as Post[];
+        .filter((post) => 'approved' in post && post.approved === true) as Post[]; // Pastikan 'approved' ada dan bernilai true
 
       setPosts(postsData);
     } catch (error) {

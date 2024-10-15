@@ -35,7 +35,7 @@ const EditProfilePage = () => {
   }, [router]);
 
   const uploadProfilePicture = async (file: File) => {
-    if (!auth.currentUser) return;
+    if (!auth.currentUser) return null;
 
     const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
     await uploadBytes(storageRef, file);
@@ -55,24 +55,29 @@ const EditProfilePage = () => {
     e.preventDefault();
     setLoading(true);
 
-    const userId = auth.currentUser?.uid;
-    if (userId) {
-      let photoURL = preview;
+    try {
+      const userId = auth.currentUser?.uid;
+      if (userId) {
+        let photoURL = preview;
 
-      // Jika ada gambar baru, upload ke Firebase Storage
-      if (profilePicture) {
-        photoURL = await uploadProfilePicture(profilePicture);
+        // Jika ada gambar baru, upload ke Firebase Storage
+        if (profilePicture) {
+          photoURL = await uploadProfilePicture(profilePicture);
+        }
+
+        // Update profil di Firestore
+        await updateDoc(doc(db, "users", userId), {
+          name,
+          bio,
+          profilePicture: photoURL || "", // Pastikan profilePicture tidak null
+        });
+
+        router.push(`/profile/${userId}`); // Redirect kembali ke halaman profil
       }
-
-      // Update profil di Firestore
-      await updateDoc(doc(db, "users", userId), {
-        name,
-        bio,
-        profilePicture: photoURL,
-      });
-
-      setLoading(false);
-      router.push(`/profile/${userId}`); // Redirect kembali ke halaman profil
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    } finally {
+      setLoading(false); // Pastikan loading di-reset meskipun ada error
     }
   };
 

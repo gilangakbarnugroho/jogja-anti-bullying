@@ -14,7 +14,7 @@ interface Post {
   content: string;
   imageUrl: string;
   createdAt: { seconds: number };
-  approved: boolean;
+  approved?: boolean;
   likes: number;
   views: number;
 }

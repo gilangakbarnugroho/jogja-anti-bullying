@@ -6,9 +6,9 @@ import { db } from "../../../firebase/firebaseConfig";
 import Image from "next/image";
 import PostCard from "../../../components/PostCardDuta";
 import Modal from "../../../components/ui/Modal";
-import DutaPostForm from "../../../components/DutaPostForm"; // Ganti nama jika diperlukan
+import DutaPostForm from "../../../components/DutaPostForm";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css"; 
+import "swiper/css";
 
 interface Post {
   id: string;
@@ -18,23 +18,25 @@ interface Post {
   imageUrl: string;
   createdAt: { seconds: number };
   likes: number;
-  approved: boolean;
+  approved?: boolean;
 }
 
 export default function DutaPelajar() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [showModal, setShowModal] = useState(false);
 
-  // Fetch posts dengan filtering approved
   const fetchPosts = useCallback(async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "dutaPosts")); 
+      const querySnapshot = await getDocs(collection(db, "dutaPosts"));
       const postsData: Post[] = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter((post) => post.approved === true) as Post[];
+        .map((doc) => {
+          const data = doc.data() as Post;
+          return {
+            ...data,  // Ambil semua properti dari 'data'
+            id: doc.id, // Tambahkan properti 'id' jika belum ada
+          };
+        })
+        .filter((post) => post.approved === true); // Filter berdasarkan approved
       setPosts(postsData);
     } catch (error) {
       console.error("Error fetching posts: ", error);
@@ -56,7 +58,13 @@ export default function DutaPelajar() {
     <div className="min-h-screen flex flex-col bg-bluetiful">
       {/* Gambar Batik - Bagian Atas */}
       <div className="w-full mt-20">
-        <Image src="/batik.png" width={1920} height={720} alt="batik" className="w-full" />
+        <Image
+          src="/batik.png"
+          width={1920}
+          height={720}
+          alt="batik"
+          className="w-full"
+        />
       </div>
 
       {/* Konten di bawah gambar batik */}
@@ -76,7 +84,8 @@ export default function DutaPelajar() {
           <div className="flex flex-col items-start justify-start mt-4 ml-8 xl:ml-24">
             <h1 className="text-4xl font-bold">Duta Pelajar</h1>
             <p className="text-lg mt-2">
-              Praktik social worker bagi siswa sebagai agen perubahan dalam mengkampanyekan budaya damai anti-bully.
+              Praktik social worker bagi siswa sebagai agen perubahan dalam
+              mengkampanyekan budaya damai anti-bully.
             </p>
 
             <button
@@ -94,13 +103,13 @@ export default function DutaPelajar() {
             spaceBetween={20}
             slidesPerView={1} // Default 1 untuk mobile
             breakpoints={{
-              640: { // Ketika layar lebih besar dari 640px (tablet)
+              640: {
                 slidesPerView: 1,
               },
-              768: { // Ketika layar lebih besar dari 768px (desktop kecil)
+              768: {
                 slidesPerView: 2,
               },
-              1024: { // Ketika layar lebih besar dari 1024px (desktop)
+              1024: {
                 slidesPerView: 3,
               },
             }}
