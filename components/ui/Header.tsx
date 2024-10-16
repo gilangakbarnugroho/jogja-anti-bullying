@@ -18,7 +18,7 @@ import { ImQuotesLeft } from "react-icons/im";
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 
 const links = [
-  ["Ruang Bincang", "/ruang-bincang"],
+  ["Ruang Berbincang", "/ruang-bincang"],
   ["Duta", "/duta"],
   ["Gelar", "/gelar"],
   ["Quotes", "/quotes"],

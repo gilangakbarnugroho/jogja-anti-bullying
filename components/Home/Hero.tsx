@@ -107,7 +107,7 @@ function Hero() {
           <div className="grow"></div>
 
             <div className="pt-6 border-t border-gray-300 text-center w-full flex">
-              <Link className="btn-bluetiful-program w-full" href="/quotes" rel="noopener" target="_blank">Halaman Gelar Pelajar</Link>
+              <Link className="btn-bluetiful-program w-full" href="/quotes" rel="noopener" target="_blank">Halaman Quotes</Link>
             </div>
           </div>
 
