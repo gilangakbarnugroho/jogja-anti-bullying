@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
-import { db, storage, auth } from "../firebase/firebaseConfig"; // Tambahkan storage
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"; // Firebase storage functions
+import { db, storage, auth } from "../firebase/firebaseConfig";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"; 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

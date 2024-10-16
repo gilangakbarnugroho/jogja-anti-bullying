@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
-import Modal from "../../../components/ui/Modal"; // Pastikan Anda memiliki komponen Modal
+import Modal from "../../../components/ui/Modal"; 
 
 interface Quote {
   id: string;
@@ -14,10 +14,9 @@ interface Quote {
 
 const Quotes = () => {
   const [quotes, setQuotes] = useState<Quote[]>([]);
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null); // State untuk menyimpan quote yang dipilih
-  const [showModal, setShowModal] = useState(false); // State untuk modal
+  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null); 
+  const [showModal, setShowModal] = useState(false); 
 
-  // Fetch data dari Firestore
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
@@ -35,13 +34,11 @@ const Quotes = () => {
     fetchQuotes();
   }, []);
 
-  // Fungsi untuk membuka modal dan menampilkan quote yang dipilih
   const openModal = (quote: Quote) => {
     setSelectedQuote(quote);
     setShowModal(true);
   };
 
-  // Fungsi untuk menutup modal
   const closeModal = () => {
     setShowModal(false);
     setSelectedQuote(null);
@@ -51,15 +48,13 @@ const Quotes = () => {
     <div className="container mx-auto px-4 py-10 mt-16">
       <h1 className="text-3xl font-bold mb-6 text-center text-bluetiful">Quotes</h1>
 
-      {/* Grid layout untuk menampilkan quotes */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {quotes.map((quote) => (
           <div
             key={quote.id}
             className="relative w-full h-60 bg-gray-200 rounded-lg overflow-hidden shadow-lg cursor-pointer"
-            onClick={() => openModal(quote)} // Ketika diklik, modal akan terbuka
+            onClick={() => openModal(quote)} 
           >
-            {/* Gambar dengan aspek rasio 1:1 */}
             <Image
               src={quote.image}
               alt={quote.caption}
@@ -68,7 +63,6 @@ const Quotes = () => {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               priority
             />
-            {/* Caption ditampilkan di bagian bawah gambar */}
             <div className="absolute bottom-0 bg-black bg-opacity-50 w-full text-white text-sm p-2 text-center">
               {quote.caption}
             </div>
@@ -76,7 +70,6 @@ const Quotes = () => {
         ))}
       </div>
 
-      {/* Modal untuk menampilkan detail quote */}
       {showModal && selectedQuote && (
         <Modal onClose={closeModal}>
           <div className="p-6">

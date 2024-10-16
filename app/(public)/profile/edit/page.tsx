@@ -10,8 +10,8 @@ import Image from "next/image";
 const EditProfilePage = () => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
-  const [profilePicture, setProfilePicture] = useState<File | null>(null); // Menggunakan file untuk gambar
-  const [preview, setPreview] = useState<string | null>(null); // Preview gambar yang diunggah
+  const [profilePicture, setProfilePicture] = useState<File | null>(null); 
+  const [preview, setPreview] = useState<string | null>(null); 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -24,7 +24,7 @@ const EditProfilePage = () => {
           const userData = userDoc.data();
           setName(userData.name || "");
           setBio(userData.bio || "");
-          setPreview(userData.profilePicture || ""); // Menggunakan URL gambar untuk preview awal
+          setPreview(userData.profilePicture || "");
         }
       } else {
         router.push("/login");
@@ -60,24 +60,22 @@ const EditProfilePage = () => {
       if (userId) {
         let photoURL = preview;
 
-        // Jika ada gambar baru, upload ke Firebase Storage
         if (profilePicture) {
           photoURL = await uploadProfilePicture(profilePicture);
         }
 
-        // Update profil di Firestore
         await updateDoc(doc(db, "users", userId), {
           name,
           bio,
-          profilePicture: photoURL || "", // Pastikan profilePicture tidak null
+          profilePicture: photoURL || "", 
         });
 
-        router.push(`/profile/${userId}`); // Redirect kembali ke halaman profil
+        router.push(`/profile/${userId}`); 
       }
     } catch (error) {
       console.error("Error updating profile:", error);
     } finally {
-      setLoading(false); // Pastikan loading di-reset meskipun ada error
+      setLoading(false); 
     }
   };
 

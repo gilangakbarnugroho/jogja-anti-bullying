@@ -19,7 +19,6 @@ interface Post {
   likes: number;
 }
 
-// Fungsi untuk memformat timestamp
 const formatTimestamp = (timestamp: { seconds: number }) => {
   const date = new Date(timestamp.seconds * 1000);
   return date.toLocaleDateString("id-ID", {
@@ -31,7 +30,6 @@ const formatTimestamp = (timestamp: { seconds: number }) => {
   });
 };
 
-// Fungsi untuk memisahkan konten per paragraf
 const formatContent = (content: string) => {
   return content.split("\n").map((paragraph, index) => (
     <p key={index} className="mb-4">
@@ -40,9 +38,8 @@ const formatContent = (content: string) => {
   ));
 };
 
-// Fetcher function untuk SWR
 const fetchPostDetail = async (id: string) => {
-  const docRef = doc(db, "dutaPosts", id); // Ganti koleksi menjadi dutaPosts
+  const docRef = doc(db, "dutaPosts", id); 
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
@@ -54,7 +51,7 @@ const fetchPostDetail = async (id: string) => {
 
 const fetchApprovedPosts = async () => {
   const approvedPostsQuery = query(
-    collection(db, "dutaPosts"), // Ganti koleksi menjadi dutaPosts
+    collection(db, "dutaPosts"), 
     where("approved", "==", true)
   );
   const querySnapshot = await getDocs(approvedPostsQuery);
@@ -65,7 +62,7 @@ const fetchApprovedPosts = async () => {
   return approvedPosts;
 };
 
-const DetailDuta = () => { // Ubah nama komponen menjadi DetailDuta
+const DetailDuta = () => { 
   const router = useRouter();
   const params = useParams();
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id || "";
@@ -75,7 +72,7 @@ const DetailDuta = () => { // Ubah nama komponen menjadi DetailDuta
     () => fetchPostDetail(id),
     {
       revalidateOnFocus: false,
-      dedupingInterval: 60000, // Cache data selama 1 menit
+      dedupingInterval: 60000, 
     }
   );
 
@@ -84,7 +81,7 @@ const DetailDuta = () => { // Ubah nama komponen menjadi DetailDuta
   useEffect(() => {
     const fetchRecommendations = async () => {
       const posts = await fetchApprovedPosts();
-      const filteredPosts = posts.filter((p) => p.id !== id); // Exclude current post
+      const filteredPosts = posts.filter((p) => p.id !== id); 
       setRecommendedPosts(filteredPosts);
     };
     fetchRecommendations();
@@ -104,11 +101,9 @@ const DetailDuta = () => { // Ubah nama komponen menjadi DetailDuta
 
   return (
     <div className="container mx-auto px-4 py-10 mt-20 grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Konten utama */}
       <div className="lg:col-span-2">
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
           <h1 className="text-3xl text-bluetiful font-bold mb-4">{post.title}</h1>
-          {/* Tampilkan informasi author */}
           <p className="text-sm text-gray-500 mb-2">Author: {post.author}</p>
           <p className="text-sm text-gray-500 mb-4">{formatTimestamp(post.createdAt)}</p>
           <Image
@@ -119,12 +114,10 @@ const DetailDuta = () => { // Ubah nama komponen menjadi DetailDuta
             className="w-full object-cover rounded-md mb-4"
             loading="lazy"
           />
-          {/* Format konten menjadi paragraf berdasarkan enter/spasi */}
           <div className="text-lg text-gray-800">{formatContent(post.content)}</div>
         </div>
       </div>
 
-      {/* Side Panel untuk rekomendasi */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-bold text-bluetiful mb-4">Artikel Lainnya</h2>
         {recommendedPosts.length > 0 ? (

@@ -51,7 +51,7 @@ const PostCardDuta: React.FC<PostCardProps> = ({
   onDelete,
   isAdmin,
 }) => {
-  const placeholderImage = "https://via.placeholder.com/400"; // Placeholder image URL
+  const placeholderImage = "https://via.placeholder.com/400"; 
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -62,30 +62,25 @@ const PostCardDuta: React.FC<PostCardProps> = ({
           layout="fill"
           objectFit="cover"
           placeholder="blur"
-          blurDataURL={placeholderImage} // Placeholder saat loading
+          blurDataURL={placeholderImage} 
           className="rounded-t-lg"
         />
       </div>
       <div className="p-4">
-        {/* Display category if it exists */}
         {category && (
           <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs mb-2 inline-block">
             {category}
           </span>
         )}
 
-        {/* Post title with link */}
         <Link href={`/duta/${id}`} className="hover:underline">
           <h2 className="font-bold text-xl text-bluetiful mb-2">{title}</h2>
         </Link>
 
-        {/* Content snippet limited to 50 words */}
         <p className="text-gray-600 text-sm mb-4">{truncateContent(content, 50)}</p>
 
-        {/* Display time since post was created */}
         <p className="text-gray-400 text-xs">{timeSince(createdAt)}</p>
 
-        {/* Like section */}
         <div className="flex items-center space-x-4 mt-4">
           <div className="flex items-center space-x-1 text-gray-500">
             <AiOutlineLike size={20} />
@@ -93,7 +88,6 @@ const PostCardDuta: React.FC<PostCardProps> = ({
           </div>
         </div>
 
-        {/* Display delete button only if admin and onDelete is provided */}
         {isAdmin && onDelete && (
           <button
             onClick={onDelete}

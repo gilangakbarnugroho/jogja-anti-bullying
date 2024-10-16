@@ -11,20 +11,18 @@ module.exports = {
     hoverOnlyWhenSupported: true,
   },
   theme: {
-    // Definisi breakpoints custom
     screens: {
       "2xs": "200px",
       xs: "350px",
       s: "500px",
-      sm: "640px", // Tailwind default
-      md: "768px", // Tailwind default
+      sm: "640px", 
+      md: "768px", 
       lmd: "880px",
-      lg: "1024px", // Tailwind default
+      lg: "1024px", 
       "2lg": "1100px",
-      xl: "1280px", // Tailwind default
-      "2xl": "1536px", // Tailwind default
+      xl: "1280px", 
+      "2xl": "1536px", 
     },
-    // Container centering
     container: {
       center: true,
       padding: {
@@ -35,10 +33,8 @@ module.exports = {
         '2xl': '6rem',
       },
     },
-    // Custom theme extensions
     extend: {
       colors: {
-        // Warna utama dengan skala yang lebih luas
         bluetiful: {
           DEFAULT: '#3377E2',
           50: '#C2E0FF',
@@ -55,15 +51,12 @@ module.exports = {
         },
       },
       fontFamily: {
-        // Menambahkan font family dari Google Fonts
         sans: ['Plus Jakarta Sans', ...fontFamily.sans],
       },
-      // Animasi custom
       animation: {
         fade: 'fadeOut 5s ease-in-out',
         blob: 'blob 7s infinite',
       },
-      // Keyframes untuk animasi custom
       keyframes: {
         fadeOut: {
           '0%': { opacity: 1 },

@@ -5,7 +5,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage, auth } from "../firebase/firebaseConfig";
 
 interface GelarPostFormProps {
-  onClose: () => void; // Fungsi untuk menutup modal
+  onClose: () => void; 
 }
 
 const GelarPostForm: React.FC<GelarPostFormProps> = ({ onClose }) => {

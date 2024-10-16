@@ -13,9 +13,9 @@ import Link from "next/link";
 interface Comment {
   id: string;
   content: string;
-  user: string; // Menyimpan userId dari Firestore, bukan email
-  isAnonymous: boolean; // Field isAnonymous untuk cek apakah komentar anonim
-  timestamp: { seconds: number }; // Firebase Timestamp
+  user: string; 
+  isAnonymous: boolean; 
+  timestamp: { seconds: number }; 
 }
 
 interface UserProfile {
@@ -24,7 +24,7 @@ interface UserProfile {
 }
 
 interface CommentListProps {
-  postId: string; // ID postingan untuk komentar
+  postId: string;
 }
 
 const CommentList: React.FC<CommentListProps> = ({ postId }) => {
@@ -32,7 +32,6 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
   const [userProfiles, setUserProfiles] = useState<{ [key: string]: UserProfile }>({});
 
   useEffect(() => {
-    // Query untuk mengambil komentar berdasarkan postId dan mengurutkan berdasarkan timestamp
     const q = query(collection(db, `posts/${postId}/comments`), orderBy("timestamp", "desc"));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -42,16 +41,15 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
       })) as Comment[];
 
       setComments(commentData);
-      fetchUserProfiles(commentData); // Ambil data profil user dari komentar
+      fetchUserProfiles(commentData); 
     });
 
     return () => unsubscribe();
   }, [postId]);
 
-  // Fungsi untuk mengambil profil user yang berkomentar
   const fetchUserProfiles = async (comments: Comment[]) => {
     const userIds = comments.map((comment) => comment.user);
-    const uniqueUserIds = Array.from(new Set(userIds)); // Hapus ID yang duplikat
+    const uniqueUserIds = Array.from(new Set(userIds)); 
 
     const profilePromises = uniqueUserIds.map(async (userId) => {
       if (!userId) return null;
@@ -87,7 +85,6 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
         comments.map((comment) => (
           <div key={comment.id} className="p-4 border rounded-lg shadow-sm">
             <div className="flex items-center space-x-3">
-              {/* Profil Picture dari user */}
               {comment.isAnonymous ? (
                 <div className="w-7 h-7 rounded-full bg-gray-400" />
               ) : userProfiles[comment.user]?.profilePicture ? (
@@ -102,7 +99,6 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
                 <div className="w-7 h-7 rounded-full bg-gray-200" />
               )}
 
-              {/* Tampilkan nama user atau Anonim */}
               {comment.isAnonymous ? (
                 <div className="font-semibold text-gray-600">Anonim</div>
               ) : (
@@ -121,7 +117,6 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
               )}
             </p>
 
-            {/* Tombol Lapor untuk Komentar */}
             <div className="flex items-center space-x-4 mt-2">
               <Upvote postId={comment.id} /> 
               <Downvote postId={comment.id} />

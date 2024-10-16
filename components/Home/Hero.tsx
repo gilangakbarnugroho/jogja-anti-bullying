@@ -47,7 +47,7 @@ function Hero() {
           <div className="grow"></div>
 
             <div className="pt-6 border-t border-gray-300 text-center w-full flex">
-              <Link className="btn-bluetiful-program w-full" href="https://jogjaantibully.com/gelar" rel="noopener" target="_blank">Gelar Pelajar </Link>
+              <Link className="btn-bluetiful-program w-full" href="/gelar" rel="noopener" target="_blank">Gelar Pelajar </Link>
             </div>
           </div>
 
@@ -67,7 +67,7 @@ function Hero() {
           <div className="grow"></div>
 
             <div className="pt-6 border-t border-gray-300 text-center w-full flex">
-              <Link className="btn-bluetiful-program w-full" href="https://jogjaantibully.com/duta" rel="noopener" target="_blank">Duta Anti Bullying</Link>
+              <Link className="btn-bluetiful-program w-full" href="/duta" rel="noopener" target="_blank">Duta Anti Bullying</Link>
             </div>
           </div>
 
@@ -87,7 +87,7 @@ function Hero() {
           <div className="grow"></div>
 
             <div className="pt-6 border-t border-gray-300 text-center w-full flex">
-              <Link className="btn-bluetiful-program w-full" href="https://jogjaantibully.com/gelar" rel="noopener" target="_blank">Ruang Berbincang</Link>
+              <Link className="btn-bluetiful-program w-full" href="/ruang-bincang" rel="noopener" target="_blank">Ruang Berbincang</Link>
             </div>
           </div>
 
@@ -107,7 +107,7 @@ function Hero() {
           <div className="grow"></div>
 
             <div className="pt-6 border-t border-gray-300 text-center w-full flex">
-              <Link className="btn-bluetiful-program w-full" href="https://jogjaantibully.com/gelar" rel="noopener" target="_blank">Halaman Gelar Pelajar</Link>
+              <Link className="btn-bluetiful-program w-full" href="/quotes" rel="noopener" target="_blank">Halaman Gelar Pelajar</Link>
             </div>
           </div>
 

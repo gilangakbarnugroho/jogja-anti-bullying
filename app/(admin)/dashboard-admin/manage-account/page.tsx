@@ -7,7 +7,7 @@ import { doc, getDoc, collection, getDocs, updateDoc } from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth";
 import Loader from "../../../../components/ui/Loader";
 import Image from "next/image";
-import { toast } from "react-hot-toast"; // Import toast untuk notifikasi
+import { toast } from "react-hot-toast"; 
 
 interface User {
   id: string;
@@ -35,13 +35,13 @@ const ManageAccount = () => {
             setIsSuperAdmin(true);
             fetchUsers();
           } else {
-            router.push("/"); // Redirect ke halaman utama jika bukan superadmin
+            router.push("/"); 
           }
         } else {
-          router.push("/"); // Redirect jika data pengguna tidak ditemukan
+          router.push("/"); 
         }
       } else {
-        router.push("/login"); // Redirect ke halaman login jika tidak ada user yang login
+        router.push("/login"); 
       }
     };
 
@@ -52,7 +52,6 @@ const ManageAccount = () => {
     return () => unsubscribe();
   }, [router]);
 
-  // Fungsi untuk mengambil semua pengguna dari Firestore
   const fetchUsers = async () => {
     try {
       const usersSnapshot = await getDocs(collection(db, "users"));
@@ -67,7 +66,6 @@ const ManageAccount = () => {
     }
   };
 
-  // Fungsi untuk mengubah role pengguna
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
       await updateDoc(doc(db, "users", userId), {
@@ -78,17 +76,16 @@ const ManageAccount = () => {
           user.id === userId ? { ...user, role: newRole } : user
         )
       );
-      toast.success("Role berhasil diperbarui!"); // Tampilkan notifikasi berhasil
+      toast.success("Role berhasil diperbarui!"); 
     } catch (error) {
       console.error("Error updating role:", error);
-      toast.error("Gagal memperbarui role."); // Tampilkan notifikasi error
+      toast.error("Gagal memperbarui role."); 
     }
   };
 
-  // Fungsi untuk memastikan URL profile picture valid
   const getValidProfilePicture = (profilePicture: string | null) => {
     if (!profilePicture || !profilePicture.startsWith("http")) {
-      return "/default-profile.jpg"; // Gambar default
+      return "/default-profile.jpg"; 
     }
     return profilePicture;
   };
@@ -105,7 +102,6 @@ const ManageAccount = () => {
     <div className="p-6 container mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-bluetiful">Manage Account</h1>
 
-      {/* Daftar Pengguna */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
           <thead>
@@ -129,7 +125,7 @@ const ManageAccount = () => {
               <tr key={user.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Image
-                    src={getValidProfilePicture(user.profilePicture)} // Perbaikan src gambar
+                    src={getValidProfilePicture(user.profilePicture)} 
                     alt={user.name}
                     width={50}
                     height={50}

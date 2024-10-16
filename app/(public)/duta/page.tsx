@@ -32,11 +32,11 @@ export default function DutaPelajar() {
         .map((doc) => {
           const data = doc.data() as Post;
           return {
-            ...data,  // Ambil semua properti dari 'data'
-            id: doc.id, // Tambahkan properti 'id' jika belum ada
+            ...data,  
+            id: doc.id, 
           };
         })
-        .filter((post) => post.approved === true); // Filter berdasarkan approved
+        .filter((post) => post.approved === true); 
       setPosts(postsData);
     } catch (error) {
       console.error("Error fetching posts: ", error);
@@ -56,7 +56,6 @@ export default function DutaPelajar() {
 
   return (
     <div className="min-h-screen flex flex-col bg-bluetiful">
-      {/* Gambar Batik - Bagian Atas */}
       <div className="w-full mt-20">
         <Image
           src="/batik.png"
@@ -67,13 +66,12 @@ export default function DutaPelajar() {
         />
       </div>
 
-      {/* Konten di bawah gambar batik */}
       <div className="flex flex-col md:flex-row w-full">
-        {/* Header Section - di kiri */}
+
         <div className="w-full md:w-1/3 bg-bluetiful text-white pt-10 text-left p-6">
           <div className="flex justify-center items-center">
             <Image
-              src="/gelar-pelajar.png" // Ganti jika ada gambar untuk DutaPelajar
+              src="/gelar-pelajar.png" 
               width={400}
               height={400}
               alt="Duta Pelajar"
@@ -97,11 +95,10 @@ export default function DutaPelajar() {
           </div>
         </div>
 
-        {/* PostCard Section - di kanan dengan swiper */}
         <div className="w-full md:w-2/3 p-6">
           <Swiper
             spaceBetween={20}
-            slidesPerView={1} // Default 1 untuk mobile
+            slidesPerView={1} 
             breakpoints={{
               640: {
                 slidesPerView: 1,
@@ -133,7 +130,6 @@ export default function DutaPelajar() {
         </div>
       </div>
 
-      {/* Modal untuk form upload DutaPost */}
       {showModal && (
         <Modal onClose={toggleModal}>
           <DutaPostForm onClose={toggleModal} />

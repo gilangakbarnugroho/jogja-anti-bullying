@@ -75,7 +75,6 @@ const ProfilePage = () => {
             timestamp: doc.data().timestamp,
           })) as Bookmark[];
 
-          // Ambil detail setiap post dan user profile berdasarkan postId
           const postDetails = await Promise.all(
             userBookmarks.map(async (bookmark) => {
               const postRef = doc(db, "posts", bookmark.postId);
@@ -86,7 +85,6 @@ const ProfilePage = () => {
               if (postDoc.exists()) {
                 const postData = postDoc.data() as Post;
 
-                // Ambil data user profile dari `users` collection berdasarkan `post.user`
                 const userDoc = await getDoc(doc(db, "users", postData.user));
                 if (userDoc.exists()) {
                   userProfile = userDoc.data() as UserProfile;
@@ -125,7 +123,6 @@ const ProfilePage = () => {
     };
   }, [router]);
 
-  // Fungsi untuk menangani logout
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/login");
@@ -142,7 +139,6 @@ const ProfilePage = () => {
     <div className="container mx-auto p-4 mt-20">
       <h1 className="text-3xl text-center text-bluetiful font-bold mb-6">Profil Saya</h1>
 
-      {/* Informasi Profil */}
       <div className="flex items-center space-x-4 mb-6">
         <Image
           src={profile.profilePicture || "/default-profile.png"}
@@ -157,15 +153,12 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Bio Profil */}
       <div className="mb-6">
         <h3 className="text-lg text-bluetiful font-semibold">Bio</h3>
         <p className="text-gray-500">{profile.bio || "Belum ada bio."}</p>
       </div>
 
-      {/* Tombol Edit Profil dan Logout */}
       <div className="flex items-center space-x-4 mb-6">
-        {/* Tombol Edit Profil */}
         <button
           onClick={() => router.push("/profile/edit")}
           className="bg-bluetiful shadow-md text-white px-7 py-2 rounded-full hover:bg-white hover:text-bluetiful"
@@ -173,7 +166,6 @@ const ProfilePage = () => {
           Edit Profil
         </button>
 
-        {/* Tombol Logout */}
         <button
           onClick={handleLogout}
           className="bg-red-700 shadow-md text-white px-7 py-2 rounded-full hover:bg-red-900"
@@ -182,10 +174,8 @@ const ProfilePage = () => {
         </button>
       </div>
 
-      {/* Aktivitas pengguna (postingan yang pernah dibuat) */}
       <h3 className="text-lg text-bluetiful font-semibold mb-4">Aktivitas Saya</h3>
 
-      {/* Menampilkan postingan yang dibuat oleh pengguna */}
       {profilePosts.length > 0 ? (
         <div className="space-y-4">
           {profilePosts.map((post) => (
@@ -202,7 +192,6 @@ const ProfilePage = () => {
         <p>Belum ada postingan.</p>
       )}
 
-      {/* Bookmark pengguna */}
       <h3 className="text-lg text-bluetiful font-semibold mt-8 mb-4">Bookmark Saya</h3>
 
       {bookmarks.length > 0 ? (

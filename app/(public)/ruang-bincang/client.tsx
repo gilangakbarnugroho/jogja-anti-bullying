@@ -23,7 +23,6 @@ import { MdVerified } from "react-icons/md";
 import Link from "next/link";
 import Image from "next/image";
 
-// Lazy load components
 const NewPostForm = dynamic(() => import("../../../components/NewPostForm"), { ssr: false });
 const Upvote = dynamic(() => import("../../../components/Upvote"), { ssr: false });
 const Downvote = dynamic(() => import("../../../components/Downvote"), { ssr: false });
@@ -55,7 +54,7 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
   const [hasMore, setHasMore] = useState(true);
   const [showOptions, setShowOptions] = useState<Record<string, boolean>>({});
   const [adminStatus, setAdminStatus] = useState<Record<string, boolean>>({});
-  const postsPerPage = 5;
+  const postsPerPage = 15;
 
   useEffect(() => {
     if (initialPosts.length > 0) {
@@ -154,7 +153,6 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
         {posts.map((post) => (
           <div key={post.id} className="p-4 my-4 border rounded-lg shadow-md hover:shadow-lg transition duration-200 relative">
             <div className="flex justify-between items-start">
-              {/* Profile Picture Block */}
               <div className="flex-shrink-0 mr-3">
                 {post.isAnonymous ? (
                   <div className="w-10 h-10 rounded-full bg-gray-400" />
@@ -169,7 +167,6 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
                 )}
               </div>
 
-              {/* Post Content Block */}
               <div className="flex-grow">
                 <div className="flex justify-between items-center">
                   <Link href={post.isAnonymous ? "#" : `/profile/${post.user}`} className="flex items-center space-x-2 hover:opacity-75">

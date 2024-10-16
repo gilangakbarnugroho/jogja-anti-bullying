@@ -61,7 +61,7 @@ export default function Footer() {
             <h6 className="text-bluetiful font-bold mb-2">Halaman</h6>
             <ul className="text-sm">
               <li className="mb-2">
-                <a href="/ruang-bincang" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Ruang Bincang</a>
+                <a href="/ruang-bincang" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Ruang Berbincang</a>
               </li>
               <li className="mb-2">
                 <a href="/duta" className="text-bluetiful hover:text-gray-900 transition duration-150 ease-in-out">Duta</a>

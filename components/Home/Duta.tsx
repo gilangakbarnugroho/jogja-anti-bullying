@@ -1,4 +1,3 @@
-// pages/anti-bullying.js
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css'; 
@@ -10,7 +9,7 @@ export default function Duta() {
   return (
     <div className="min-h-screen py-10">
       <div className="container mx-auto px-4">
-        {/* Section 1: Duta Anti Bullying */}
+
         <section className="mb-16">
           <div className="flex justify-between items-center mb-6">
             <div>
@@ -34,7 +33,6 @@ export default function Duta() {
             }}
             className="mySwiper"
           >
-            {/* Slide 1 */}
             <SwiperSlide>
               <div className="bg-white rounded-lg shadow-md overflow-hidden my-4">
                 <Image
@@ -51,7 +49,6 @@ export default function Duta() {
               </div>
             </SwiperSlide>
 
-            {/* Slide 2 */}
             <SwiperSlide>
               <div className="bg-white rounded-lg shadow-md overflow-hidden my-4">
                 <Image
@@ -68,7 +65,6 @@ export default function Duta() {
               </div>
             </SwiperSlide>
 
-            {/* Slide 3 */}
             <SwiperSlide>
               <div className="bg-white rounded-lg shadow-md overflow-hidden my-4">
                 <Image
@@ -85,7 +81,6 @@ export default function Duta() {
               </div>
             </SwiperSlide>
 
-            {/* Slide 4 */}
             <SwiperSlide>
               <div className="bg-white rounded-lg shadow-md overflow-hidden my-4">
                 <Image
@@ -104,7 +99,6 @@ export default function Duta() {
           </Swiper>
         </section>
 
-        {/* Section 2: Quotes Anti-Bully */}
         <section>
           <h2 className="text-4xl font-bold text-bluetiful mb-6">Quotes Anti-Bully</h2>
           <p className="text-lg text-gray-600 mb-6">
@@ -121,7 +115,6 @@ export default function Duta() {
             }}
             className="mySwiper"
           >
-            {/* Slide 1 */}
             <SwiperSlide>
               <div className="bg-blue-500 text-white rounded-lg shadow-md p-6">
                 <p className="text-sm">Setiap orang berhak merasa aman tanpa perundungan.</p>
@@ -141,7 +134,6 @@ export default function Duta() {
               </div>
             </SwiperSlide>
 
-            {/* Slide 2 */}
             <SwiperSlide>
               <div className="bg-blue-500 text-white rounded-lg shadow-md p-6">
                 <p className="text-sm">Setiap orang berhak merasa aman tanpa perundungan.</p>
@@ -161,7 +153,6 @@ export default function Duta() {
               </div>
             </SwiperSlide>
 
-            {/* Slide 3 */}
             <SwiperSlide>
               <div className="bg-blue-500 text-white rounded-lg shadow-md p-6">
                 <p className="text-sm">Setiap orang berhak merasa aman tanpa perundungan.</p>

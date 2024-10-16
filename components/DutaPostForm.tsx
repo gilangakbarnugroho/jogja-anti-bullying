@@ -22,7 +22,7 @@ const DutaPostForm: React.FC<DutaPostFormProps> = ({ onClose }) => {
       return;
     }
 
-    const MAX_SIZE = 2 * 1024 * 1024; // Maksimal ukuran file 2MB
+    const MAX_SIZE = 2 * 1024 * 1024; 
     if (file.size > MAX_SIZE) {
       alert("Ukuran gambar maksimal adalah 2MB. Silakan pilih gambar lain.");
       return;
@@ -49,19 +49,18 @@ const DutaPostForm: React.FC<DutaPostFormProps> = ({ onClose }) => {
           const currentUser = auth.currentUser;
           const author = currentUser ? currentUser.email : "Anonim";
 
-          // Simpan data ke koleksi 'dutaPosts'
           await addDoc(collection(db, "dutaPosts"), {
             title,
             content,
             imageUrl: downloadURL,
             createdAt: new Date(),
             author,
-            approved: false, // Set status persetujuan default ke false
+            approved: false, 
             likes: 0,
           });
 
           alert("Postingan berhasil diunggah! Tunggu persetujuan admin.");
-          onClose(); // Tutup modal setelah posting
+          onClose(); 
         }
       );
     } catch (error) {

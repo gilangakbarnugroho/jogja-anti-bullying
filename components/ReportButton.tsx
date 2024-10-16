@@ -9,23 +9,22 @@ import { MdOutlineReportProblem, MdReportProblem } from "react-icons/md";
 interface ReportButtonProps {
   postId: string;
   contentType: "post" | "comment";
-  commentId?: string; // Opsional, hanya digunakan jika contentType adalah komentar
+  commentId?: string; 
 }
 
 const ReportButton: React.FC<ReportButtonProps> = ({ postId, contentType, commentId }) => {
   const [isReported, setIsReported] = useState(false);
   const [showReasonForm, setShowReasonForm] = useState(false);
   const [reportReason, setReportReason] = useState("");
-  const [customReason, setCustomReason] = useState(""); // Untuk alasan custom
-  const [selectedReason, setSelectedReason] = useState(""); // Untuk alasan yang dipilih dari dropdown
+  const [customReason, setCustomReason] = useState(""); 
+  const [selectedReason, setSelectedReason] = useState("");
 
-  // Daftar pilihan alasan pelaporan
   const reasonOptions = [
     "Spam",
     "Kekerasan",
     "Konten tidak pantas",
     "Pelanggaran hak cipta",
-    "Lainnya (custom)", // Ini opsi untuk custom
+    "Lainnya (custom)", 
   ];
 
   const handleReport = async () => {
@@ -34,26 +33,22 @@ const ReportButton: React.FC<ReportButtonProps> = ({ postId, contentType, commen
       return;
     }
 
-    // Alasan harus dipilih
     if (selectedReason === "") {
       alert("Silakan pilih alasan pelaporan.");
       return;
     }
 
-    // Jika user memilih "Lainnya (custom)", gunakan alasan custom
     const finalReason = selectedReason === "Lainnya (custom)" ? customReason : selectedReason;
 
-    // Pastikan custom reason diisi jika dipilih
     if (selectedReason === "Lainnya (custom)" && customReason.trim() === "") {
       alert("Silakan masukkan alasan pelaporan Anda.");
       return;
     }
 
     try {
-      // Kirim data laporan ke Firestore
       await addDoc(collection(db, "reports"), {
         postId,
-        commentId: contentType === "comment" ? commentId : null, // Hanya tambahkan commentId jika melaporkan komentar
+        commentId: contentType === "comment" ? commentId : null, 
         contentType,
         reason: finalReason,
         user: auth.currentUser?.email || "Anonim",
@@ -85,7 +80,6 @@ const ReportButton: React.FC<ReportButtonProps> = ({ postId, contentType, commen
 
           {showReasonForm && (
             <div className="mt-2 p-2 bg-gray-100 border border-gray-300 rounded-lg">
-              {/* Dropdown untuk memilih alasan */}
               <select
                 value={selectedReason}
                 onChange={(e) => setSelectedReason(e.target.value)}
@@ -101,7 +95,6 @@ const ReportButton: React.FC<ReportButtonProps> = ({ postId, contentType, commen
                 ))}
               </select>
 
-              {/* Jika alasan "Lainnya (custom)" dipilih, tampilkan textarea */}
               {selectedReason === "Lainnya (custom)" && (
                 <textarea
                   value={customReason}

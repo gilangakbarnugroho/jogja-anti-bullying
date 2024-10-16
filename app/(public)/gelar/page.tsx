@@ -15,14 +15,13 @@ interface Post {
   imageUrl: string;
   createdAt: { seconds: number };
   likes: number;
-  approved?: boolean; // Properti ini opsional
+  approved?: boolean; 
 }
 
 export default function GelarPelajar() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [showModal, setShowModal] = useState(false); // State untuk modal
+  const [showModal, setShowModal] = useState(false); 
 
-  // Fungsi untuk fetch posts dengan filtering approved dan optimasi data
   const fetchPosts = useCallback(async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "gelarPosts"));
@@ -31,7 +30,7 @@ export default function GelarPelajar() {
           id: doc.id,
           ...doc.data(),
         }))
-        .filter((post) => 'approved' in post && post.approved === true) as Post[]; // Pastikan 'approved' ada dan bernilai true
+        .filter((post) => 'approved' in post && post.approved === true) as Post[]; 
 
       setPosts(postsData);
     } catch (error) {
@@ -40,22 +39,18 @@ export default function GelarPelajar() {
     }
   }, []);
 
-  // Gunakan useEffect untuk memanggil fetchPosts
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
 
-  // Optimasi dengan useMemo untuk caching posts
   const optimizedPosts = useMemo(() => posts, [posts]);
 
-  // Fungsi untuk membuka dan menutup modal
   const toggleModal = () => {
     setShowModal((prev) => !prev);
   };
 
   return (
     <div className="min-h-screen">
-      {/* Header Section */}
       <header className="bg-bluetiful text-white pt-10 text-center">
         <div className="flex justify-center items-center">
           <Image
@@ -72,7 +67,6 @@ export default function GelarPelajar() {
           Wahana ekspresi potensi berbasis Multiple Intelligence untuk merealisasikan minat, bakat, dan kreativitas pelajar.
         </p>
 
-        {/* Button untuk membuka form unggah GelarPost */}
         <button
           className="mt-6 px-6 py-3 bg-white text-bluetiful font-semibold rounded-full shadow-lg hover:bg-bluetiful hover:text-white transition"
           onClick={toggleModal}
@@ -85,7 +79,6 @@ export default function GelarPelajar() {
         </div>
       </header>
 
-      {/* Content Section */}
       <div className="container mx-auto px-4 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {optimizedPosts.map((post) => (
@@ -104,7 +97,6 @@ export default function GelarPelajar() {
         </div>
       </div>
 
-      {/* Modal untuk form upload GelarPost */}
       {showModal && (
         <Modal onClose={toggleModal}>
           <GelarPostForm onClose={toggleModal} />

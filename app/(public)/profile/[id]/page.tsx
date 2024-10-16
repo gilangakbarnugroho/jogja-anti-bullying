@@ -36,7 +36,6 @@ const ProfilePage = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  // Ambil userId dari parameter URL
   const userId = pathname?.split("/").pop() || "";
 
   useEffect(() => {
@@ -96,7 +95,6 @@ const ProfilePage = () => {
     <div className="container mx-auto p-4 mt-16">
       <h1 className="text-3xl text-center text-bluetiful font-bold mb-6">Profil {profile.name}</h1>
 
-      {/* Informasi Profil */}
       <div className="flex items-center space-x-4 mb-6">
         <Image
           src={profile.profilePicture || "/default-profile.png"}
@@ -109,16 +107,13 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Bio Profil */}
       <div className="mb-6">
         <h3 className="text-lg text-bluetiful font-semibold">Bio</h3>
         <p className="text-gray-500">{profile.bio || "Belum ada bio."}</p>
       </div>
 
-      {/* Aktivitas pengguna (postingan yang pernah dibuat) */}
       <h3 className="text-lg text-bluetiful font-semibold mb-4">Aktivitas {profile.name}</h3>
 
-      {/* Menampilkan postingan yang dibuat oleh pengguna */}
       {profilePosts.length > 0 ? (
         <div className="space-y-4">
           {profilePosts.map((post) => (

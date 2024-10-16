@@ -11,7 +11,6 @@ import { auth, db } from "../../../../firebase/firebaseConfig";
 import { deleteDoc, doc, getDoc } from "firebase/firestore"; 
 import ReportButton from "../../../../components/ReportButton";
 
-// Lazy load components with fallback handling
 const Upvote = dynamic(() => import("../../../../components/Upvote"), { ssr: false });
 const Downvote = dynamic(() => import("../../../../components/Downvote"), { ssr: false });
 const BookmarkButton = dynamic(() => import("../../../../components/BookmarkButton"), { ssr: false });
@@ -23,12 +22,12 @@ interface Post {
   content: string;
   user: string;
   name: string;
-  profilePicture?: string; // Optional
+  profilePicture?: string; 
   isAnonymous: boolean;
   category?: string;
   fileType?: string;
   fileURL?: string;
-  timestamp: { seconds?: number }; // Optional seconds field
+  timestamp: { seconds?: number }; 
 }
 
 interface DetailPostClientProps {
@@ -87,7 +86,6 @@ const DetailPostClient: FC<DetailPostClientProps> = ({ post }) => {
   return (
     <div className="p-4 my-4 border rounded-lg shadow-md hover:shadow-lg transition duration-200 relative">
       <div className="flex items-start space-x-4">
-        {/* Profile Picture Block */}
         <div className="flex-shrink-0">
           {post.isAnonymous ? (
             <div className="w-10 h-10 rounded-full bg-gray-400" />
@@ -102,7 +100,6 @@ const DetailPostClient: FC<DetailPostClientProps> = ({ post }) => {
           )}
         </div>
 
-        {/* Post Content Block */}
         <div className="flex-grow">
           <div className="flex justify-between items-center">
             <Link href={post.isAnonymous ? "#" : `/profile/${post.user}`} className="flex items-center space-x-2 hover:opacity-75">

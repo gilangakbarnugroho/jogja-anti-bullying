@@ -29,11 +29,10 @@ const NewPostForm = () => {
   const [fileError, setFileError] = useState<string | null>(null);
   const [previewURL, setPreviewURL] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [posts, setPosts] = useState<Post[]>([]); // State untuk menyimpan daftar postingan
-  const [showModal, setShowModal] = useState(false); // Tambahkan state untuk modal
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [showModal, setShowModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Ambil daftar postingan secara real-time
   useEffect(() => {
     const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"));
     const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
@@ -84,9 +83,7 @@ const NewPostForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Cek apakah user telah login
     if (!auth.currentUser) {
-      // Jika belum login, tampilkan modal peringatan
       setShowModal(true);
       return;
     }
@@ -118,7 +115,6 @@ const NewPostForm = () => {
         });
       }
 
-      // Menambahkan postingan ke Firestore dan langsung perbarui state `posts`
       const newPost = {
         content,
         fileURL,
@@ -132,7 +128,6 @@ const NewPostForm = () => {
 
       await addDoc(collection(db, "posts"), newPost);
       
-      // Kosongkan form setelah posting berhasil
       setContent("");
       setFile(null);
       setPreviewURL(null);
@@ -144,13 +139,11 @@ const NewPostForm = () => {
     }
   };
 
-  // Fungsi untuk mengarahkan ke halaman login
   const redirectToLogin = () => {
     setShowModal(false);
     router.push("/login");
   };
 
-  // Fungsi untuk menutup modal tanpa mengarahkan ke login
   const closeModal = () => {
     setShowModal(false);
   };
@@ -233,7 +226,6 @@ const NewPostForm = () => {
         </div>
       </form>
 
-      {/* Modal untuk peringatan autentikasi */}
       {showModal && (
         <div className="fixed z-50 inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 max-w-md mx-auto">

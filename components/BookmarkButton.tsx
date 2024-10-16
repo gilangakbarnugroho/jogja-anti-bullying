@@ -37,11 +37,9 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({ postId }) => {
     const bookmarkRef = doc(db, `users/${userId}/bookmarks/${postId}`);
 
     if (bookmarked) {
-      // Jika sudah dibookmark, hapus bookmark
       await deleteDoc(bookmarkRef);
       setBookmarked(false);
     } else {
-      // Jika belum dibookmark, tambahkan bookmark
       await setDoc(bookmarkRef, {
         postId,
         timestamp: new Date(),

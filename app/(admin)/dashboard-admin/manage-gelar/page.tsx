@@ -30,10 +30,9 @@ export default function ManageGelar() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Untuk menyimpan post yang dipilih untuk preview
-  const [editPost, setEditPost] = useState<Post | null>(null); // Untuk menyimpan post yang dipilih untuk edit
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null); 
+  const [editPost, setEditPost] = useState<Post | null>(null); 
 
-  // Periksa apakah pengguna adalah admin
   useEffect(() => {
     const checkAdminStatus = async () => {
       const user = auth.currentUser;
@@ -50,7 +49,6 @@ export default function ManageGelar() {
     checkAdminStatus();
   }, []);
 
-  // Ambil post dari Firestore
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true);
@@ -70,7 +68,6 @@ export default function ManageGelar() {
     fetchPosts();
   }, []);
 
-  // Tambahkan post baru ke Firestore
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -132,7 +129,6 @@ export default function ManageGelar() {
     }
   };
 
-  // Fungsi untuk mengubah status approved post
   const handleApprove = async (id: string, approved: boolean) => {
     try {
       await updateDoc(doc(db, "gelarPosts", id), { approved });
@@ -145,7 +141,6 @@ export default function ManageGelar() {
     }
   };
 
-  // Fungsi untuk menghapus post
   const handleDelete = async (id: string) => {
     if (!isAdmin) {
       alert("Anda tidak memiliki izin untuk menghapus postingan.");
@@ -161,17 +156,14 @@ export default function ManageGelar() {
     }
   };
 
-  // Fungsi untuk membuka modal dengan detail post (preview modal)
   const handlePostClick = (post: Post) => {
-    setSelectedPost(post); // Set post yang dipilih untuk preview
+    setSelectedPost(post);
   };
 
-  // Fungsi untuk menutup modal preview
   const handleCloseModal = () => {
-    setSelectedPost(null); // Reset post yang dipilih
+    setSelectedPost(null); 
   };
 
-  // Fungsi untuk membuka modal edit post
   const handleEditPost = (post: Post) => {
     setEditPost(post);
     setTitle(post.title);
@@ -179,13 +171,11 @@ export default function ManageGelar() {
     setCategory(post.category);
   };
 
-  // Fungsi untuk menutup modal edit
   const handleCloseEditModal = () => {
     setEditPost(null);
     setFile(null);
   };
 
-  // Fungsi untuk menyimpan perubahan post yang diedit
   const handleUpdatePost = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -250,7 +240,6 @@ export default function ManageGelar() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-10">
-        {/* Form untuk menambahkan post baru */}
         <form onSubmit={handleSubmit} className="mb-6">
           <h2 className="text-2xl font-bold text-bluetiful mb-4">Tambah Postingan Baru</h2>
           <input
@@ -298,7 +287,6 @@ export default function ManageGelar() {
           </button>
         </form>
 
-        {/* Tampilkan post dalam grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           {posts.map((post) => (
             <div key={post.id} className="border p-4 rounded-md shadow-md"            >
@@ -346,7 +334,6 @@ export default function ManageGelar() {
 
         {isLoading && <Loader />}
 
-        {/* Modal untuk preview post */}
         {selectedPost && (
           <Modal onClose={handleCloseModal}>
             <div className="p-4">
@@ -367,7 +354,6 @@ export default function ManageGelar() {
           </Modal>
         )}
 
-        {/* Modal untuk edit post */}
         {editPost && (
           <Modal onClose={handleCloseEditModal}>
             <form onSubmit={handleUpdatePost} className="p-4">

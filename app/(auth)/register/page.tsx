@@ -22,11 +22,10 @@ const RegisterForm = () => {
   const { executeRecaptcha } = useGoogleReCaptcha();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [isVerified, setIsVerified] = useState(false); // Status verifikasi reCAPTCHA
-  const [profilePicture, setProfilePicture] = useState<File | null>(null); // File gambar profil
+  const [isVerified, setIsVerified] = useState(false); 
+  const [profilePicture, setProfilePicture] = useState<File | null>(null); 
   const [loading, setLoading] = useState(false);
 
-  // Fungsi untuk mengunggah gambar profil ke Firebase Storage
   const uploadProfilePicture = async (userId: string, file: File) => {
     const storageRef = ref(storage, `profilePictures/${userId}`);
     await uploadBytes(storageRef, file);
@@ -42,7 +41,6 @@ const RegisterForm = () => {
 
     try {
       setLoading(true);
-      // Jalankan reCAPTCHA v3 dan dapatkan token verifikasi
       const token = await executeRecaptcha("register");
       if (!token) {
         setError("Verifikasi reCAPTCHA gagal. Silakan coba lagi.");
@@ -57,12 +55,10 @@ const RegisterForm = () => {
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
 
-      let photoURL = user.photoURL || ""; // Gambar profil dari Google
+      let photoURL = user.photoURL || ""; 
 
       if (!userSnap.exists()) {
-        // Jika pengguna belum terdaftar di Firestore, simpan data baru
         if (profilePicture) {
-          // Jika pengguna memilih gambar profil sendiri, unggah ke Firebase Storage
           photoURL = await uploadProfilePicture(user.uid, profilePicture);
         }
 
@@ -79,7 +75,7 @@ const RegisterForm = () => {
         alert("Akun Google ini sudah terdaftar. Silakan login.");
       }
 
-      await signOut(auth); // Logout setelah registrasi
+      await signOut(auth); 
       router.push("/login");
       setLoading(false);
     } catch (error) {
@@ -97,7 +93,7 @@ const RegisterForm = () => {
 
   useEffect(() => {
     if (auth.currentUser) {
-      router.push("/ruang-bincang"); // Jika sudah login, arahkan langsung ke halaman utama
+      router.push("/ruang-bincang"); 
     }
   }, [router]);
 
@@ -107,10 +103,8 @@ const RegisterForm = () => {
         <h1 className="text-3xl text-center font-bold text-gray-700 mb-6">Register</h1>
         <div className="flex flex-col items-center space-y-4">
 
-          {/* Pilih gambar profil */}
           {/* <input type="file" accept="image/*" onChange={handleFileChange} className="mb-4" /> */}
 
-          {/* Register dengan Google */}
           <button
             onClick={handleGoogleRegister}
             className="flex items-center justify-center shadow-md bg-white text-gray-700 px-4 py-2 rounded-full hover:bg-gray-200 space-x-2 w-full sm:w-64"
@@ -120,10 +114,8 @@ const RegisterForm = () => {
             <span>{loading ? "Mendaftar..." : "Register dengan Google"}</span>
           </button>
 
-          {/* Pesan Error */}
           {error && <p className="text-red-500 text-sm italic mt-2">{error}</p>}
 
-          {/* Link ke Halaman Login */}
           <div>
             <p className="text-sm text-gray-600 mt-4">
               Sudah punya akun?{" "}

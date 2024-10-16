@@ -36,7 +36,7 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
   const [comment, setComment] = useState<Comment | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [commentCount, setLocalCommentCount] = useState(0);
-  const [showOptions, setShowOptions] = useState(false); // To toggle slOptions
+  const [showOptions, setShowOptions] = useState(false); 
 
   useEffect(() => {
     const q = query(
@@ -80,7 +80,6 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
     }
   };
 
-  // Fungsi untuk menghapus komentar
   const handleDeleteComment = async (commentId: string) => {
     const confirmed = window.confirm("Apakah Anda yakin ingin menghapus komentar ini?");
     if (!confirmed) return;
@@ -88,7 +87,7 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
     try {
       await deleteDoc(doc(db, `posts/${postId}/comments`, commentId));
       alert("Komentar berhasil dihapus.");
-      setComment(null); // Reset komentar setelah dihapus
+      setComment(null); 
     } catch (error) {
       console.error("Error deleting comment: ", error);
     }
@@ -100,7 +99,6 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
         <div className="p-4 border rounded-lg shadow-sm relative">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              {/* Jika komentar anonim, tampilkan gambar dan nama default */}
               {comment.isAnonymous ? (
                 <>
                   <div className="w-7 h-7 rounded-full bg-gray-400" />
@@ -118,7 +116,6 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
                 <div className="w-7 h-7 rounded-full bg-gray-200" />
               )}
 
-              {/* Tampilkan nama user atau Anonim */}
               {comment.isAnonymous ? (
                 <div className="font-semibold text-gray-600"></div>
               ) : (
@@ -128,7 +125,6 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
               )}
             </div>
 
-            {/* slOptions */}
             <div className="relative">
               <SlOptions
                 className="cursor-pointer text-gray-300"
@@ -152,7 +148,6 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
 
           <p className="py-2 text-gray-700">{comment.content}</p>
 
-          {/* Render fileURL jika ada */}
           {comment.fileURL && comment.fileType?.startsWith("image/") && (
             <Image
               src={comment.fileURL}
@@ -175,7 +170,6 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
               : "Waktu tidak tersedia"}
           </p>
 
-          {/* Upvote, Downvote, and Bookmark for the comment */}
           <div className="flex space-x-3 items-center mt-2">
             <Upvote postId={comment.id} />
             <Downvote postId={comment.id} />
@@ -186,7 +180,6 @@ const PostCommentList: React.FC<PostCommentListProps> = ({ postId, setCommentCou
         <p className="text-sm text-gray-500 text-center">Belum ada komentar.</p>
       )}
 
-      {/* Tampilkan tautan hanya jika ada lebih dari satu komentar */}
       {commentCount > 0 && (
         <Link href={`/ruang-bincang/${postId}`} className="flex items-center text-bluetiful text-sm hover:underline mt-2">
           <FaCommentDots className="mr-1" /> Tampilkan lebih banyak komentar...

@@ -19,7 +19,7 @@ const Upvote: React.FC<UpvoteProps> = ({ postId }) => {
       const postRef = doc(db, `posts/${postId}`);
       const postDoc = await getDoc(postRef);
       if (postDoc.exists()) {
-        setUpvotes(postDoc.data().upvotes || []); // Ambil upvotes sebagai array
+        setUpvotes(postDoc.data().upvotes || []); 
       }
     };
 
@@ -38,13 +38,11 @@ const Upvote: React.FC<UpvoteProps> = ({ postId }) => {
 
     try {
       if (upvotes.includes(userId)) {
-        // Jika sudah upvote, hapus upvote user dari array
         await updateDoc(postRef, {
           upvotes: arrayRemove(userId),
         });
         setUpvotes(upvotes.filter((id) => id !== userId));
       } else {
-        // Tambahkan user ke array upvotes dan hapus dari downvotes jika ada
         await updateDoc(postRef, {
           upvotes: arrayUnion(userId),
           downvotes: arrayRemove(userId),

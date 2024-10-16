@@ -4,7 +4,6 @@ import { getFirestore, getDoc, doc } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getFunctions } from 'firebase/functions'; 
 
-// Firebase Configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -14,17 +13,14 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 
-// Firebase Services
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 const functions = getFunctions(app);
 
 
-// Fungsi untuk mengecek apakah pengguna adalah admin
 export const isAdmin = async (): Promise<boolean> => {
   if (!auth.currentUser) return false;
 
@@ -39,4 +35,4 @@ export const isAdmin = async (): Promise<boolean> => {
   return false;
 };
 
-export { auth, db, storage, functions }; // Ekspor semua services, termasuk Cloud Functions
+export { auth, db, storage, functions }; 

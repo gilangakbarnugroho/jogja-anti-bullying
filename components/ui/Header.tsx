@@ -25,13 +25,12 @@ const links = [
 ];
 
 function Header() {
-  const [open, setOpen] = useState(false); // Open state for half-screen menu
+  const [open, setOpen] = useState(false); 
   const [top, setTop] = useState<boolean>(true);
   const [user, setUser] = useState<any>(null);
   const [isAdminUser, setIsAdminUser] = useState(false);
   const router = useRouter();
 
-  // Update tampilan header saat scroll
   const scrollHandler = () => {
     window.pageYOffset > 10 ? setTop(false) : setTop(true);
   };
@@ -54,21 +53,19 @@ function Header() {
     };
   }, [open]);
 
-  // Mengatur state user berdasarkan Firebase Authentication
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
-        checkAdminRole(user.uid); // Cek apakah user adalah admin
+        checkAdminRole(user.uid); 
       } else {
         setUser(null);
-        setIsAdminUser(false); // Reset admin status
+        setIsAdminUser(false); 
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // Cek apakah user memiliki role "admin"
   const checkAdminRole = async (uid: string) => {
     try {
       const userDocRef = doc(db, "users", uid);
@@ -88,15 +85,13 @@ function Header() {
   };
 
   return (
-    <header className={`fixed w-full z-30 bg-opacity-90 transition duration-300 ease-in-out ${!top && !open ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
+    <header className={`fixed w-full z-30 bg-opacity-90 bg-white transition duration-300 ease-in-out ${!top && !open ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
       <div className="mx-auto max-w-6xl px-5 md:px-10">
         <div className="flex items-center justify-between py-5">
-          {/* Logo */}
           <Link href="/" className="flex items-center">
             <Logo />
           </Link>
 
-          {/* Navigation Links - Desktop */}
           <div className="hidden md:flex space-x-8 items-center text-bluetiful">
             {links.map((val, key) => (
               <Link href={val[1]} key={key} className="hover:underline">
@@ -110,7 +105,6 @@ function Header() {
             )}
           </div>
 
-          {/* Search & Profile/Account - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             {/* <Link href="/search" className="bg-bluetiful rounded-full p-2 text-white hover:bg-white hover:text-bluetiful">
               <LuSearch size={20} />
@@ -127,7 +121,6 @@ function Header() {
             )}
           </div>
 
-          {/* Mobile Menu Icon */}
           <div className="md:hidden text-bluetiful">
             <button onClick={() => setOpen(true)}>
               <CgOptions size={32} />
@@ -136,7 +129,6 @@ function Header() {
         </div>
       </div>
 
-      {/* Right Half-Screen Menu for Mobile */}
       <div
         className={`fixed top-0 right-0 h-full w-1/2 bg-white z-50 backdrop-blur-lg transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "translate-x-full"
@@ -144,7 +136,6 @@ function Header() {
       >
         <div className="flex flex-col h-full">
           <div className="flex justify-end p-5 mr-5 border-b">
-            {/* Close Button */}
             <button onClick={() => setOpen(false)} className="text-bluetiful font-semibold">
               <FaTimes size={24} />
             </button>
@@ -191,7 +182,6 @@ function Header() {
         </div>
       </div>
 
-      {/* Backdrop when menu is open */}
       {open && <div className="fixed inset-0 bg-black backdrop-blur-lg opacity-50 z-40" onClick={() => setOpen(false)}></div>}
     </header>
   );

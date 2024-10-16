@@ -20,7 +20,6 @@ const ManageQuotes = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Ambil data quotes dari Firestore saat komponen di-mount
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
@@ -37,7 +36,6 @@ const ManageQuotes = () => {
     fetchQuotes();
   }, []);
 
-  // Fungsi untuk upload gambar ke Firebase Storage dan mendapatkan URL-nya
   const handleImageUpload = async (): Promise<string | null> => {
     if (!imageFile) return null;
     if (imageFile.size > 2 * 1024 * 1024) {
@@ -51,32 +49,28 @@ const ManageQuotes = () => {
       await uploadBytes(imageRef, imageFile);
       const downloadURL = await getDownloadURL(imageRef);
       toast.success("Gambar berhasil diupload!");
-      return downloadURL; // Kembalikan URL gambar
+      return downloadURL; 
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Gagal mengupload gambar!");
-      return null; // Pastikan mengembalikan null jika ada error
+      return null; 
     } finally {
       setIsUploading(false);
     }
   };
   
-  // Tambah quote baru ke Firestore
   const addQuote = async () => {
     if (!newQuote.caption || !imageFile) {
       toast.error("Caption dan gambar harus diisi!");
       return;
     }
   
-    // Tunggu proses upload gambar selesai
     const imageURL = await handleImageUpload();
     
     if (!imageURL) {
-      // Jika upload gagal, hentikan proses
       return;
     }
   
-    // Update state dengan URL gambar yang diupload
     setNewQuote((prevQuote) => ({ ...prevQuote, image: imageURL }));
   
     try {
@@ -98,39 +92,33 @@ const ManageQuotes = () => {
   const updateQuote = async () => {
     if (!editQuoteId) return;
   
-    // Jika pengguna tidak mengisi caption atau tidak ada gambar (baik lama atau baru)
     if (!newQuote.caption || (!newQuote.image && !imageFile)) {
       toast.error("Caption dan gambar harus diisi!");
       return;
     }
   
-    let updatedImageURL: string = newQuote.image; // Default ke gambar yang sudah ada
+    let updatedImageURL: string = newQuote.image; 
   
-    // Jika pengguna memilih gambar baru, upload gambar baru
     if (imageFile) {
-      const uploadResult = await handleImageUpload(); // Tunggu upload gambar baru
+      const uploadResult = await handleImageUpload(); 
       if (!uploadResult) {
-        // Jika upload gambar gagal, hentikan proses update
         toast.error("Gagal mengupload gambar. Proses update dihentikan.");
         return;
       }
-      updatedImageURL = uploadResult; // Assign nilai yang berhasil diupload
+      updatedImageURL = uploadResult;
     }
   
     try {
-      // Update quote di Firestore dengan caption dan gambar baru (jika ada)
       await updateDoc(doc(db, "quotes", editQuoteId), {
         caption: newQuote.caption,
-        image: updatedImageURL, // Pastikan hanya menggunakan string
+        image: updatedImageURL, 
       });
   
-      // Update state dengan data yang diperbarui
       const updatedQuotes = quotes.map((quote) =>
         quote.id === editQuoteId ? { ...quote, caption: newQuote.caption, image: updatedImageURL } : quote
       );
       setQuotes(updatedQuotes);
   
-      // Reset form dan state setelah update berhasil
       setEditQuoteId(null);
       setNewQuote({ caption: "", image: "" });
       setImageFile(null);
@@ -141,11 +129,7 @@ const ManageQuotes = () => {
       toast.error("Gagal memperbarui quote.");
     }
   };
-  
 
-  
-
-  // Hapus quote dari Firestore
   const deleteQuote = async (id: string) => {
     try {
       await deleteDoc(doc(db, "quotes", id));
@@ -161,7 +145,6 @@ const ManageQuotes = () => {
     <div className="p-6 container mx-auto mt-20">
       <h1 className="text-2xl text-bluetiful font-bold mb-4">Manage Quotes</h1>
 
-      {/* Form untuk menambah / mengedit quote */}
       <div className="flex flex-col space-y-4 mb-6">
         <input
           type="text"
@@ -182,7 +165,6 @@ const ManageQuotes = () => {
           className="border text-gray-500 p-2 rounded w-full"
         />
 
-        {/* Preview Gambar */}
         {newQuote.image && (
           <div className="relative w-32 h-32 mt-2 mb-4">
             <Image src={newQuote.image} alt="Preview" fill className="rounded-lg object-cover" />
@@ -200,7 +182,6 @@ const ManageQuotes = () => {
         )}
       </div>
 
-      {/* List Quotes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {quotes.map((quote) => (
           <div key={quote.id} className="border bg-white p-4 rounded shadow-md">

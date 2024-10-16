@@ -44,7 +44,6 @@ const ManageReports = () => {
             contentRef = doc(db, `posts/${report.postId}/comments`, report.id);
           }
 
-          // Pastikan contentRef tidak undefined sebelum memanggil getDoc
           if (contentRef) {
             const contentSnap = await getDoc(contentRef);
             if (contentSnap.exists()) {
@@ -129,8 +128,8 @@ const ManageReports = () => {
                           src={reportedContents[report.id].fileURL}
                           alt="Post"
                           className="w-32 h-32 object-cover rounded-lg mt-2"
-                          width={128} // Tentukan ukuran gambar
-                          height={128} // Tentukan ukuran gambar
+                          width={128} 
+                          height={128} 
                         />
                       )}
                     </>
