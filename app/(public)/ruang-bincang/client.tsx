@@ -12,6 +12,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  onSnapshot,
   QueryDocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
@@ -57,18 +58,21 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
   const postsPerPage = 15;
 
   useEffect(() => {
-    if (initialPosts.length > 0) {
-      const fetchInitialLastVisible = async () => {
-        const q = query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(postsPerPage));
-        const snapshot = await getDocs(q);
-        if (!snapshot.empty) {
-          setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-        }
-      };
-      fetchInitialLastVisible();
-      fetchAdminStatus(initialPosts); 
-    }
-  }, [initialPosts]);
+    const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(postsPerPage));
+    const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
+      const newPosts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Post[];
+      setPosts(newPosts);
+
+      if (!snapshot.empty) {
+        setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+        setHasMore(snapshot.docs.length === postsPerPage);
+      } else {
+        setHasMore(false);
+      }
+    });
+
+    return () => unsubscribe(); 
+  }, []);
 
   const fetchMorePosts = async () => {
     if (!lastVisible || !hasMore || isLoading) return;
