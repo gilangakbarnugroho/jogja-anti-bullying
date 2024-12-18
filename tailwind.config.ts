@@ -56,6 +56,7 @@ module.exports = {
       animation: {
         fade: 'fadeOut 5s ease-in-out',
         blob: 'blob 7s infinite',
+        infinitescroll: 'infinite-scroll 25s linear infinites',
       },
       keyframes: {
         fadeOut: {
@@ -70,6 +71,10 @@ module.exports = {
             transform: 'translateY(-10px)',
           },
         },
+        infinitescroll: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-100%)' },
+        }                  
       },
     },
   },
