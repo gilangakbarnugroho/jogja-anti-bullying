@@ -37,7 +37,7 @@ const RuangBincangPage = async () => {
     <div className="container max-w-4xl mx-auto p-4 mt-24">
       <h1 className="text-3xl font-bold mb-6 text-center text-bluetiful">Ruang Berbincang</h1>
       <Suspense fallback={<Loader />}>
-        <RuangBincangClient initialPosts={posts} /> 
+        <RuangBincangClient /> 
       </Suspense>
     </div>
   );

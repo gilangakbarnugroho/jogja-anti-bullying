@@ -12,6 +12,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   QueryDocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
@@ -43,6 +44,10 @@ interface Post {
   timestamp: { seconds?: number };
 }
 
+interface RuangBincangClientProps {
+  initialPosts: Post[];
+}
+
 const RuangBincangClient: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
@@ -54,20 +59,19 @@ const RuangBincangClient: React.FC = () => {
 
   useEffect(() => {
     const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(postsPerPage));
-
     const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-      const newPosts = snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
+      const newPosts = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as Post[];
 
-      setPosts(newPosts); // Perbarui state dengan data Firestore
-      setLastVisible(snapshot.docs[snapshot.docs.length - 1] || null); // Simpan dokumen terakhir untuk pagination
-      setHasMore(snapshot.docs.length === postsPerPage); // Periksa apakah ada lebih banyak postingan
+      setPosts(newPosts);
+      setLastVisible(snapshot.docs[snapshot.docs.length - 1] || null);
+      setHasMore(snapshot.docs.length === postsPerPage);
       setIsLoading(false);
     });
 
-    return () => unsubscribe(); // Hentikan listener saat komponen di-unmount
+    return () => unsubscribe();
   }, []);
 
   const fetchMorePosts = async () => {
@@ -99,26 +103,13 @@ const RuangBincangClient: React.FC = () => {
     }
   };
 
-  const fetchAdminStatus = async (posts: Post[]) => {
-    const newAdminStatus: Record<string, boolean> = {};
-
-    for (const post of posts) {
-      const userDocRef = doc(db, "users", post.user);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists() && userDoc.data().role === "admin") {
-        newAdminStatus[post.user] = true;
-      }
-    }
-
-    setAdminStatus((prevStatus) => ({ ...prevStatus, ...newAdminStatus }));
-  };
-
   const handleDeletePost = async (postId: string) => {
     const confirmed = window.confirm("Apakah Anda yakin untuk menghapus postingan ini?");
     if (!confirmed) return;
 
     try {
       await deleteDoc(doc(db, "posts", postId));
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
       alert("Postingan berhasil dihapus.");
     } catch (error) {
       console.error("Error deleting post: ", error);
@@ -176,9 +167,7 @@ const RuangBincangClient: React.FC = () => {
                   <Link href={post.isAnonymous ? "#" : `/profile/${post.user}`} className="flex items-center space-x-2 hover:opacity-75">
                     <div className="font-semibold text-bluetiful flex items-center">
                       {post.isAnonymous ? "Anonim" : post.name || post.user}
-                      {adminStatus[post.user] && <MdVerified className="ml-1 text-blue-500" />}
                     </div>
-
                     <p className="text-xs text-gray-500">
                       {post.timestamp?.seconds ? timeSince(post.timestamp.seconds) : "Waktu tidak tersedia"}
                     </p>
@@ -239,34 +228,32 @@ const RuangBincangClient: React.FC = () => {
                   <div className="grow"></div>
 
                   <div className="flex-1 flex justify-center">
-                    <Downvote postId={post.id} />
-                  </div>
+                    <Downvote postId={post.id} /> </div>
+                    <div className="grow"></div>
 
-                  <div className="grow"></div>
-
-                  <div className="flex-1 flex justify-center">
-                    <BookmarkButton postId={post.id} />
-                  </div>
-                </div>
-
-                <div className="mt-2">
-                  <PostCommentList postId={post.id} />
-                </div>
+              <div className="flex-1 flex justify-center">
+                <BookmarkButton postId={post.id} />
               </div>
             </div>
-          </div>
-        ))}
-      </div>
 
-      <div className="mt-8 flex justify-center">
-        {hasMore && !isLoading && (
-          <button onClick={fetchMorePosts} className="btn-bluetiful mt-2">
-            Tampilkan Lebih Banyak
-          </button>
-        )}
-        {isLoading && <Loader />}
+            <div className="mt-2">
+              <PostCommentList postId={post.id} />
+            </div>
+          </div>
+        </div>
       </div>
+    ))}
+  </div>
+
+  <div className="mt-8 flex justify-center">
+    {hasMore && !isLoading && (
+      <button onClick={fetchMorePosts} className="btn-bluetiful mt-2">
+        Tampilkan Lebih Banyak
+      </button>
+    )}
+    {isLoading && <Loader />}
     </div>
+  </div>
   );
 };
 
