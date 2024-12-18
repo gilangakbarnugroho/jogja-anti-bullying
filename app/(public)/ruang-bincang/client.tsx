@@ -8,11 +8,10 @@ import {
   orderBy,
   limit,
   startAfter,
-  getDocs,
+  onSnapshot,
   deleteDoc,
   doc,
   getDoc,
-  onSnapshot,
   QueryDocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
@@ -44,14 +43,10 @@ interface Post {
   timestamp: { seconds?: number };
 }
 
-interface RuangBincangClientProps {
-  initialPosts: Post[];
-}
-
-const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts }) => {
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
+const RuangBincangClient: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [showOptions, setShowOptions] = useState<Record<string, boolean>>({});
   const [adminStatus, setAdminStatus] = useState<Record<string, boolean>>({});
@@ -59,19 +54,20 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
 
   useEffect(() => {
     const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(postsPerPage));
-    const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-      const newPosts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Post[];
-      setPosts(newPosts);
 
-      if (!snapshot.empty) {
-        setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-        setHasMore(snapshot.docs.length === postsPerPage);
-      } else {
-        setHasMore(false);
-      }
+    const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
+      const newPosts = snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Post[];
+
+      setPosts(newPosts); // Perbarui state dengan data Firestore
+      setLastVisible(snapshot.docs[snapshot.docs.length - 1] || null); // Simpan dokumen terakhir untuk pagination
+      setHasMore(snapshot.docs.length === postsPerPage); // Periksa apakah ada lebih banyak postingan
+      setIsLoading(false);
     });
 
-    return () => unsubscribe(); 
+    return () => unsubscribe(); // Hentikan listener saat komponen di-unmount
   }, []);
 
   const fetchMorePosts = async () => {
@@ -79,7 +75,13 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
 
     try {
       setIsLoading(true);
-      const q = query(collection(db, "posts"), orderBy("timestamp", "desc"), startAfter(lastVisible), limit(postsPerPage));
+      const q = query(
+        collection(db, "posts"),
+        orderBy("timestamp", "desc"),
+        startAfter(lastVisible),
+        limit(postsPerPage)
+      );
+
       const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
@@ -87,7 +89,6 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
         setPosts((prevPosts) => [...prevPosts, ...newPosts]);
         setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
         setHasMore(snapshot.docs.length === postsPerPage);
-        fetchAdminStatus(newPosts);
       } else {
         setHasMore(false);
       }
@@ -118,7 +119,6 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
 
     try {
       await deleteDoc(doc(db, "posts", postId));
-      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
       alert("Postingan berhasil dihapus.");
     } catch (error) {
       console.error("Error deleting post: ", error);
@@ -182,7 +182,6 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
                     <p className="text-xs text-gray-500">
                       {post.timestamp?.seconds ? timeSince(post.timestamp.seconds) : "Waktu tidak tersedia"}
                     </p>
-
                   </Link>
 
                   <div className="relative">
@@ -207,25 +206,23 @@ const RuangBincangClient: React.FC<RuangBincangClientProps> = ({ initialPosts })
                 </div>
 
                 <Link href={`/ruang-bincang/${post.id}`}>
+                  <p className="text-lg text-gray-700 pb-3">{post.content}</p>
 
-                <p className="text-lg text-gray-700 pb-3">{post.content}</p>
-
-                {post.fileURL && post.fileType?.startsWith("image/") && (
-                  <Image
-                    src={post.fileURL}
-                    alt="Post Image"
-                    width={1920}
-                    height={1080}
-                    className="rounded-lg mb-4 mx-auto block"
-                    style={{ maxWidth: "100%", height: "auto" }}
-                  />
-                )}
-                {post.fileURL && post.fileType?.startsWith("video/") && (
-                  <video controls className="w-full mt-4 rounded-lg mx-auto block">
-                    <source src={post.fileURL} type={post.fileType} />
-                  </video>
-                )}
-
+                  {post.fileURL && post.fileType?.startsWith("image/") && (
+                    <Image
+                      src={post.fileURL}
+                      alt="Post Image"
+                      width={1920}
+                      height={1080}
+                      className="rounded-lg mb-4 mx-auto block"
+                      style={{ maxWidth: "100%", height: "auto" }}
+                    />
+                  )}
+                  {post.fileURL && post.fileType?.startsWith("video/") && (
+                    <video controls className="w-full mt-4 rounded-lg mx-auto block">
+                      <source src={post.fileURL} type={post.fileType} />
+                    </video>
+                  )}
                 </Link>
 
                 <div className="flex justify-between items-center border-t my-2 pt-3">
