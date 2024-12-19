@@ -14,7 +14,7 @@ function Hero() {
 
        <div className="relative z-10">
           <div
-            className="absolute w-16 h-16 overflow-hidden pointer-events-none -z-10 bottom-2 left-20 md:left-24 md:w-20 md:h-20 animate-blob">
+            className="absolute w-16 h-16 overflow-hidden pointer-events-none -z-10 bottom-2 left-20 md:left-24 md:w-20 md:h-20 animate-blob animation-delay-2000">
             <Image src="/icon-1.svg" alt="Icon 1" fill />
           </div>
           <div
@@ -22,7 +22,7 @@ function Hero() {
             <Image src="/icon-2.svg" alt="Icon 1" fill />
           </div>
           <div
-            className="absolute w-8 h-8 overflow-hidden pointer-events-none -z-10 bottom-10 left-4 md:left-4 md:w-8 md:h-8 animate-blob">
+            className="absolute w-8 h-8 overflow-hidden pointer-events-none -z-10 bottom-10 left-4 md:left-4 md:w-8 md:h-8 animate-blob animation-delay-3000">
             <Image src="/icon-2.svg" alt="Icon 1" fill />
           </div>
 
@@ -32,7 +32,7 @@ function Hero() {
           </div>
 
           <div
-            className="absolute w-6 h-6 overflow-hidden pointer-events-none -z-10 top-36 right-8 md:right-12 md:w-6 md:h-6 animate-blob">
+            className="absolute w-6 h-6 overflow-hidden pointer-events-none -z-10 top-36 right-8 md:right-12 md:w-6 md:h-6 animate-blob animation-delay-2000">
             <Image src="/icon-2.svg" alt="Icon 1" fill />
           </div>
 
@@ -44,7 +44,7 @@ function Hero() {
               <div className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
                 <div className='mt-4 mb-4 md:mt-4 sm:w-auto sm:mb-0'>
                 <Link
-                href="/search"
+                href="/ruang-bincang"
                 className="btn-bluetiful"
                 >
                 Explore
