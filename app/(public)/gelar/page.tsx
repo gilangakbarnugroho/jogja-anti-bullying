@@ -48,6 +48,7 @@ export default function GelarPelajar() {
   const toggleModal = () => {
     setShowModal((prev) => !prev);
   };
+  
 
   return (
     <div className="min-h-screen">

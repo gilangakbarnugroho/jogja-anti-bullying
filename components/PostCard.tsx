@@ -14,6 +14,7 @@ interface PostCardProps {
   imageUrl: string;
   createdAt: number;
   likes: number;
+  onDelete?: () => Promise<void>;
   isAdmin: boolean;
 }
 
@@ -50,6 +51,7 @@ const PostCard: React.FC<PostCardProps> = ({
   imageUrl,
   createdAt,
   likes,
+  onDelete,
   isAdmin,
 }) => {
   const [liked, setLiked] = useState(false);
