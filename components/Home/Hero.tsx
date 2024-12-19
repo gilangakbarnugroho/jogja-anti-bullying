@@ -42,14 +42,14 @@ function Hero() {
           <div className="max-w-3xl mx-auto">
             <p className="text-md md:text-xl text-bluetiful tracking-wider mb-6">Gerakan Digital untuk Stop Bullying: Program, Artikel, dan Sumber Daya untuk Membuat Perubahan</p>
               <div className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
-                <div className='mt-4 mb-4 md:mt-4 sm:w-auto sm:mb-0'>
+                {/* <div className='mt-4 mb-4 md:mt-4 sm:w-auto sm:mb-0'>
                 <Link
                 href="/ruang-bincang"
                 className="btn-bluetiful"
                 >
                 Explore
                 </Link>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

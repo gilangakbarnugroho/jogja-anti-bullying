@@ -114,7 +114,7 @@ const DetailGelar = () => {
             className="w-full object-cover rounded-md mb-4"
             loading="lazy"
           />
-          <div className="text-lg text-gray-800">{formatContent(post.content)}</div>
+          <div className="text-lg text-gray-800 text-justify">{formatContent(post.content)}</div>
         </div>
       </div>
 

@@ -38,22 +38,21 @@ const Livechat = () => {
             Selamat Datang!
           </h2>
           <p className="text-sm text-gray-600 mb-4">
-            Halo! Ada yang bisa kami bantu? Silakan pilih salah satu opsi di
-            bawah ini:
+            Halo! Ada yang bisa kami bantu?
           </p>
           <div className="space-y-2">
             <a
-              href="#"
-              className="block px-4 py-2 bg-bluetiful text-white rounded-lg text-center hover:bg-bluetiful-800 transition"
+              href="https://api.whatsapp.com/send?phone=62888283123&text=Selamat%20pagi/siang/sore%2C%20tim%20Jogja%20Anti%20Bullying!"
+              className="block px-4 py-2 bg-bluetiful text-white rounded-lg text-center hover:bg-bluetiful-500 transition"
             >
               Hubungi Admin JAB
             </a>
-            <a
+            {/* <a
               href="#"
               className="block px-4 py-2 bg-bluetiful text-white rounded-lg text-center hover:bg-bluetiful-800 transition"
             >
               Hubungi Admin Sekolah
-            </a>
+            </a> */}
           </div>
         </div>
       )}
