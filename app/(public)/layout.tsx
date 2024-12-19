@@ -4,6 +4,7 @@ import { FC, ReactNode } from 'react';
 import "../../styles/globals.css";
 import Header from "../../components/ui/Header";
 import Nav from "../../components/ui/Nav";
+import Livechat from "@/components/ui/Livechat";
 import Footer from "../../components/ui/Footer";
 import { Toaster } from "react-hot-toast";
 
@@ -35,9 +36,12 @@ export const metadata: Metadata = {
 const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <html lang="en">
+
       <body
         className={`${plusJakartaSans.variable} antialiased min-h-screen flex flex-col`}
       >
+        <Livechat />
+
         <Header />
         <Toaster />
         <main className="relative z-10">

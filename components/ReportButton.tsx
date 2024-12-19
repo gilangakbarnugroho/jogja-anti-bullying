@@ -79,13 +79,13 @@ const ReportButton: React.FC<ReportButtonProps> = ({ postId, contentType, commen
           </button>
 
           {showReasonForm && (
-            <div className="mt-2 p-2 bg-gray-100 border border-gray-300 rounded-lg">
+            <div className="mt-2 p-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-500">
               <select
                 value={selectedReason}
                 onChange={(e) => setSelectedReason(e.target.value)}
                 className="w-full p-2 mb-2 border rounded-lg"
               >
-                <option value="" disabled>
+                <option className="text-gray-100 bg-gray-500" value="" disabled>
                   Pilih alasan pelaporan
                 </option>
                 {reasonOptions.map((reason, index) => (

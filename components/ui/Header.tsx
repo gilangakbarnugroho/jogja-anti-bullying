@@ -85,7 +85,7 @@ function Header() {
   };
 
   return (
-    <header className={`fixed w-full z-30 bg-opacity-90 bg-white transition duration-300 ease-in-out ${!top && !open ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
+    <header className={`fixed w-full z-30 bg-opacity-50 bg-white backdrop-blur-lg transition duration-300 ease-in-out ${!top && !open ? "bg-white backdrop-blur-md shadow-lg" : ""}`}>
       <div className="mx-auto max-w-6xl px-5 md:px-10">
         <div className="flex items-center justify-between py-5">
           <Link href="/" className="flex items-center">
@@ -130,7 +130,7 @@ function Header() {
       </div>
 
       <div
-        className={`fixed top-0 right-0 h-full w-1/2 bg-white z-50 backdrop-blur-lg transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-full w-1/2 bg-white z-50 backdrop-blur-xl transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >

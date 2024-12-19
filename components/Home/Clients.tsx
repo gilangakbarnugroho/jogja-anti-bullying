@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Image from "next/image";
 
 function Clients() {
   const logosRef = useRef<HTMLUListElement>(null);
@@ -29,29 +30,38 @@ function Clients() {
           ref={logosRef}
           className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
         >
-          <li>
-            <img src="./facebook.svg" alt="Facebook" />
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 1.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
           </li>
-          <li>
-            <img src="./disney.svg" alt="Disney" />
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 2.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
           </li>
-          <li>
-            <img src="./airbnb.svg" alt="Airbnb" />
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 3.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
           </li>
-          <li>
-            <img src="./apple.svg" alt="Apple" />
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 4.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
           </li>
-          <li>
-            <img src="./spark.svg" alt="Spark" />
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 5.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
           </li>
-          <li>
-            <img src="./samsung.svg" alt="Samsung" />
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 6.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
           </li>
-          <li>
-            <img src="./quora.svg" alt="Quora" />
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 7.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
           </li>
-          <li>
-            <img src="./sass.svg" alt="Sass" />
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 8.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
+          </li>
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 9.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
+          </li>
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 10.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
+          </li>
+          <li className="w-20 h-20">
+            <Image src="/clients/client - 11.png" alt="Dinas Pendidikan Pemuda dan Olahraga Kota Yogyakarta" height={70} width={70} />
           </li>
         </ul>
       </div>

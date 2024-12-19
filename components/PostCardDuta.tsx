@@ -1,13 +1,16 @@
-import React from "react";
-import { AiOutlineLike } from "react-icons/ai";
+import React, { useState, useEffect } from "react";
+import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 import Link from "next/link";
 import Image from "next/image";
+import { db } from "../firebase/firebaseConfig";
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
+import { auth } from "../firebase/firebaseConfig";
 
 interface PostCardProps {
   id: string;
   title: string;
   content: string;
-  category?: string; 
+  category?: string;
   imageUrl: string;
   createdAt: number;
   likes: number;
@@ -51,7 +54,53 @@ const PostCardDuta: React.FC<PostCardProps> = ({
   onDelete,
   isAdmin,
 }) => {
-  const placeholderImage = "https://via.placeholder.com/400"; 
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(likes);
+  const placeholderImage = "https://via.placeholder.com/400";
+
+  useEffect(() => {
+    const fetchLikeStatus = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const postRef = doc(db, "dutaPosts", id);
+      const postSnap = await getDoc(postRef);
+
+      if (postSnap.exists() && postSnap.data().likedBy?.includes(user.uid)) {
+        setLiked(true);
+      }
+    };
+
+    fetchLikeStatus();
+  }, [id]);
+
+  const handleLike = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Anda harus login untuk memberikan like.");
+      return;
+    }
+
+    const postRef = doc(db, "dutaPosts", id);
+
+    if (liked) {
+      // Jika sudah di-like, hapus like
+      await updateDoc(postRef, {
+        likedBy: arrayRemove(user.uid),
+        likes: likeCount - 1,
+      });
+      setLikeCount((prev) => prev - 1);
+      setLiked(false);
+    } else {
+      // Tambahkan like
+      await updateDoc(postRef, {
+        likedBy: arrayUnion(user.uid),
+        likes: likeCount + 1,
+      });
+      setLikeCount((prev) => prev + 1);
+      setLiked(true);
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -62,7 +111,7 @@ const PostCardDuta: React.FC<PostCardProps> = ({
           layout="fill"
           objectFit="cover"
           placeholder="blur"
-          blurDataURL={placeholderImage} 
+          blurDataURL={placeholderImage}
           className="rounded-t-lg"
         />
       </div>
@@ -82,10 +131,15 @@ const PostCardDuta: React.FC<PostCardProps> = ({
         <p className="text-gray-400 text-xs">{timeSince(createdAt)}</p>
 
         <div className="flex items-center space-x-4 mt-4">
-          <div className="flex items-center space-x-1 text-gray-500">
-            <AiOutlineLike size={20} />
-            <span>{likes}</span>
-          </div>
+          <button
+            className={`flex items-center space-x-1 ${
+              liked ? "text-blue-500" : "text-gray-500"
+            }`}
+            onClick={handleLike}
+          >
+            {liked ? <AiFillLike size={20} /> : <AiOutlineLike size={20} />}
+            <span>{likeCount}</span>
+          </button>
         </div>
 
         {isAdmin && onDelete && (

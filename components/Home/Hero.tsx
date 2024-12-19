@@ -5,10 +5,39 @@ import { BsArrowUpRightCircleFill } from "react-icons/bs";
 
 function Hero() {
   return (
-    <div className="relative mx-auto items-center pt-8 md:pt-36">
+
+    <div className="relative mx-auto items-center pt-16 md:pt-36">
+
       <div className="flex flex-col md:flex-row max-w-6xl mx-auto my-auto justify-center items-center py-24 md:py-10 px-10 rtl">
        {/* Section header */}
        <div className="text-center pb-4 md:pb-16">
+
+       <div className="relative z-10">
+          <div
+            className="absolute w-16 h-16 overflow-hidden pointer-events-none -z-10 bottom-2 left-20 md:left-24 md:w-20 md:h-20 animate-blob">
+            <Image src="/icon-1.svg" alt="Icon 1" fill />
+          </div>
+          <div
+            className="absolute w-6 h-6 overflow-hidden pointer-events-none -z-10 -bottom-10 -left-8 md:-left-12 md:w-6 md:h-6 animate-blob">
+            <Image src="/icon-2.svg" alt="Icon 1" fill />
+          </div>
+          <div
+            className="absolute w-8 h-8 overflow-hidden pointer-events-none -z-10 bottom-10 left-4 md:left-4 md:w-8 md:h-8 animate-blob">
+            <Image src="/icon-2.svg" alt="Icon 1" fill />
+          </div>
+
+          <div
+            className="absolute w-8 h-8 overflow-hidden pointer-events-none -z-10 -bottom-6 -right-8 md:-right-12 md:w-8 md:h-8 animate-blob">
+            <Image src="/icon-2.svg" alt="Icon 1" fill />
+          </div>
+
+          <div
+            className="absolute w-6 h-6 overflow-hidden pointer-events-none -z-10 top-36 right-8 md:right-12 md:w-6 md:h-6 animate-blob">
+            <Image src="/icon-2.svg" alt="Icon 1" fill />
+          </div>
+
+        </div>
+
         <h1 className="text-5xl md:text-6xl font-bold leading-tighter mb-4"> <span className="text-bluetiful">Kanal Digital Anti Bullying</span></h1>
           <div className="max-w-3xl mx-auto">
             <p className="text-md md:text-xl text-bluetiful tracking-wider mb-6">Gerakan Digital untuk Stop Bullying: Program, Artikel, dan Sumber Daya untuk Membuat Perubahan</p>
@@ -39,7 +68,7 @@ function Hero() {
                 <blockquote className="text-left text-4xl font-bold text-bluetiful">Gelar Pelajar</blockquote>
               </div>
             <div className="grow"></div>
-              <Image className="mb-4" src="/icon-gelar.png" width={100} height={100} alt="Gelar Pelajar" />
+              <Image className="mb-4 w-20 h-20" src="/icon-gelar.png" width={70} height={70} alt="Gelar Pelajar" />
             </div>
           </div>
 
@@ -59,7 +88,7 @@ function Hero() {
                 <blockquote className="text-left text-3xl font-bold text-bluetiful">Duta Anti Bullying</blockquote>
               </div>
             <div className="grow"></div>
-              <Image className="mb-4" src="/icon-duta.png" width={100} height={100} alt="Duta Anti Bullying" />
+              <Image className="mb-4 w-20 h-20" src="/icon-duta.png" width={70} height={70} alt="Duta Anti Bullying" />
             </div>
           </div>
 
@@ -79,7 +108,7 @@ function Hero() {
                 <blockquote className="text-left text-3xl font-bold text-bluetiful">Ruang Berbincang</blockquote>
               </div>
             <div className="grow"></div>
-              <Image className="mb-4" src="/icon-ruangbincang.png" width={100} height={100} alt="Ruang berbincang" />
+              <Image className="mb-4 w-20 h-20" src="/icon-ruangbincang.png" width={70} height={70} alt="Ruang berbincang" />
             </div>
           </div>
 
@@ -99,7 +128,7 @@ function Hero() {
                 <blockquote className="text-left text-3xl font-bold text-bluetiful">Quotes Anti Bullying</blockquote>
               </div>
             <div className="grow"></div>
-              <Image className="mb-4" src="/icon-quotes.png" width={100} height={100} alt="Gelar Pelajar" />
+              <Image className="mb-4 w-20 h-20" src="/icon-quotes.png" width={70} height={70} alt="Gelar Pelajar" />
             </div>
           </div>
 

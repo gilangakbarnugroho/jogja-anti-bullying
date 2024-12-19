@@ -8,7 +8,10 @@ import PostCard from "../../../components/PostCardDuta";
 import Modal from "../../../components/ui/Modal";
 import DutaPostForm from "../../../components/DutaPostForm";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation"; 
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 interface Post {
   id: string;
@@ -32,11 +35,11 @@ export default function DutaPelajar() {
         .map((doc) => {
           const data = doc.data() as Post;
           return {
-            ...data,  
-            id: doc.id, 
+            ...data,
+            id: doc.id,
           };
         })
-        .filter((post) => post.approved === true); 
+        .filter((post) => post.approved === true);
       setPosts(postsData);
     } catch (error) {
       console.error("Error fetching posts: ", error);
@@ -67,11 +70,10 @@ export default function DutaPelajar() {
       </div>
 
       <div className="flex flex-col md:flex-row w-full">
-
         <div className="w-full md:w-1/3 bg-bluetiful text-white pt-10 text-left p-6">
           <div className="flex justify-center items-center">
             <Image
-              src="/gelar-pelajar.png" 
+              src="/gelar-pelajar.png"
               width={400}
               height={400}
               alt="Duta Pelajar"
@@ -95,10 +97,29 @@ export default function DutaPelajar() {
           </div>
         </div>
 
-        <div className="w-full md:w-2/3 p-6">
+        <div className="w-full md:w-2/3 p-6 relative">
+          {/* Tombol Panah */}
+          <button
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white text-bluetiful rounded-full p-2 shadow hover:bg-gray-100"
+            id="swiper-prev"
+          >
+            <IoIosArrowBack size={24} />
+          </button>
+          <button
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white text-bluetiful rounded-full p-2 shadow hover:bg-gray-100"
+            id="swiper-next"
+          >
+            <IoIosArrowForward size={24} />
+          </button>
+
           <Swiper
+            modules={[Navigation]} 
+            navigation={{
+              prevEl: "#swiper-prev", 
+              nextEl: "#swiper-next", 
+            }}
             spaceBetween={20}
-            slidesPerView={1} 
+            slidesPerView={1}
             breakpoints={{
               640: {
                 slidesPerView: 1,
